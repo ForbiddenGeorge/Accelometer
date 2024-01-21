@@ -36,19 +36,26 @@ class Settings : ComponentActivity() {
         FTPPassword = findViewById(R.id.FTP_Password)
         FTPDirectory = findViewById(R.id.FTP_Directory)
         FTPPort = findViewById(R.id.FTP_Port)
-        loadData()
-        saveButton.setOnClickListener {
-            saveData()
-        }
         FTPHost.visibility = View.INVISIBLE
         FTPName.visibility = View.INVISIBLE
         FTPPassword.visibility = View.INVISIBLE
         FTPDirectory.visibility = View.INVISIBLE
         FTPPort.visibility = View.INVISIBLE
         FTPHeadline.visibility = View.INVISIBLE
+        loadData()
+        saveButton.setOnClickListener {
+            saveData()
+        }
         checkFTP.setOnCheckedChangeListener { _, isChecked ->
             if(isChecked) {
                 FTPShow()
+            }else{
+                FTPHost.visibility = View.INVISIBLE
+                FTPName.visibility = View.INVISIBLE
+                FTPPassword.visibility = View.INVISIBLE
+                FTPDirectory.visibility = View.INVISIBLE
+                FTPPort.visibility = View.INVISIBLE
+                FTPHeadline.visibility = View.INVISIBLE
             }
         }
     }
