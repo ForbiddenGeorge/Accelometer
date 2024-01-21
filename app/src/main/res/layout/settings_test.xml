@@ -53,10 +53,27 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textColorHint="@color/basic"
-            app:layout_constraintBottom_toTopOf="@id/FTPHeadline"
+            app:layout_constraintBottom_toTopOf="@id/CheckFTP"
             app:layout_constraintEnd_toEndOf="@id/guidelineButtonRight"
             app:layout_constraintStart_toStartOf="@id/guidelineButtonLeft"
             app:layout_constraintTop_toBottomOf="@id/SpeedHeadline" />
+
+        <CheckBox
+            android:id="@+id/CheckFTP"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintTop_toBottomOf="@id/LatenceEditText"
+            app:layout_constraintBottom_toTopOf="@id/FTPHeadline"
+            android:text="Nastavit FTP připojení"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMaxTextSize="25sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="2sp"
+            android:buttonTint="@color/da_blue"
+            android:textColor="@color/da_blue"
+            />
 
         <TextView
             android:id="@+id/FTPHeadline"

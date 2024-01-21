@@ -1,30 +1,30 @@
 package com.example.accelometer
 
-import Writer
 import FTPSender
+import Writer
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import androidx.activity.ComponentActivity
+import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import android.os.Handler
+import android.util.Log
+import android.widget.Button
 import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -98,7 +98,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
     //Pravidelné zaznamenávání dat
     private var scheduledExecutor: ScheduledExecutorService? = null
     //FTP
-    //val ftpSender = FTPSender()
+    public val ftpSender = FTPSender()
 
     //Inicializace
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,8 +157,6 @@ class Mereni : ComponentActivity(), SensorEventListener {
         gSensorDataY.text = "y=0"
         gSensorDataZ.text = "z=0"
 
-
-
         startButton = findViewById(R.id.startButton)
         stopwatchTime = findViewById(R.id.TimeRunData)
         latency = sharedPreferences.getInt("INT_KEY",0)
@@ -213,7 +211,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
             startTimeMillis = System.currentTimeMillis()
             startTime = SystemClock.elapsedRealtime()
             updateStopwatch()
-            scheduledExecutor = Executors.newScheduledThreadPool(1)
+            scheduledExecutor = Executors.newScheduledThreadPool(2)
             startHighResolutionTimer()
         }else{
             Toast.makeText(this,"Nebyl zvolen žádný senzor", Toast.LENGTH_LONG).show()
@@ -237,10 +235,14 @@ class Mereni : ComponentActivity(), SensorEventListener {
         scheduledExecutor?.shutdown()
         Toast.makeText(this, "Soubor $jmenoSouboruCele uložen!", Toast.LENGTH_LONG).show()
         val directory = csvWriter.getAppSubdirectory().toString()
-        /*ftpSender.init(applicationContext, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked, directory)
-        ftpSender.uploadFileToFTPAsync()*/
+        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+        val ftp = sharedPreferences.getBoolean("FTP_CHECK", true)
+        if(ftp)
+        {
+            ftpSender.init(applicationContext, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked, directory)
+            ftpSender.uploadFileToFTPAsync()
+        }
         resetingValues()
-
     }
 
     //Tohle musí jít nějak zefektivnit, zkrášltít
