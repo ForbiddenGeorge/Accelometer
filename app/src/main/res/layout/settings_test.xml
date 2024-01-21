@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/Headline"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:autoSizeTextType="uniform"
+            android:text="@string/Title_Activity_Nastaveni"
+            android:textAlignment="center"
+            android:textColor="@color/da_blue"
+            app:layout_constraintBottom_toBottomOf="@id/guidelineHeadLineBottom"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/guidelineHeadLineTop" />
+
+        <TextView
+            android:id="@+id/SpeedHeadline"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_below="@+id/Headline"
+            android:autoSizeTextType="uniform"
+            android:text="Spoždění snímání (ms)"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@id/guidelineFrequencyHeadlineBottom"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/guidelineHeadLineBottom" />
+
+        <EditText
+            android:id="@+id/LatenceEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/Headline"
+            android:hint="20"
+            android:inputType="number"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            app:layout_constraintBottom_toTopOf="@id/FTPHeadline"
+            app:layout_constraintEnd_toEndOf="@id/guidelineButtonRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineButtonLeft"
+            app:layout_constraintTop_toBottomOf="@id/SpeedHeadline" />
+
+        <TextView
+            android:id="@+id/FTPHeadline"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:autoSizeTextType="uniform"
+            android:text="FTP nastavení"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@id/guidelineFTPHeadlineBottom"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+            app:layout_constraintTop_toTopOf="@id/guidelineFrequencyBottom" />
+
+        <EditText
+            android:id="@+id/FTP_Host"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/FTPHeadline"
+            android:hint="Host"
+            android:inputType="textNoSuggestions"
+            android:maxLines="1"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            app:layout_constraintBottom_toTopOf="@id/FTP_Username"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/FTPHeadline"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <EditText
+            android:id="@+id/FTP_Username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/FTP_Host"
+            android:hint="Jméno"
+            android:inputType="textNoSuggestions"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            app:layout_constraintBottom_toTopOf="@id/FTP_Password"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/FTP_Host" />
+
+        <EditText
+            android:id="@+id/FTP_Password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/FTP_Username"
+            android:hint="Heslo"
+            android:inputType="textPassword"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            app:layout_constraintBottom_toTopOf="@id/FTP_Directory"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/FTP_Username" />
+
+        <EditText
+            android:id="@+id/FTP_Directory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/FTP_Password"
+            android:hint="Umístění"
+            android:inputType="textNoSuggestions"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            app:layout_constraintBottom_toTopOf="@id/FTP_Port"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/FTP_Password" />
+
+        <EditText
+            android:id="@+id/FTP_Port"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/FTP_Directory"
+            android:hint="Port"
+            android:inputType="number"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            app:layout_constraintBottom_toTopOf="@id/guidelineButtonTop"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/FTP_Directory" />
+
+        <Button
+            android:id="@+id/SaveButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/da_blue"
+            android:gravity="center"
+            android:shadowColor="@color/da_blue"
+            android:text="@string/Button_Ulozit"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@id/guidelineButtonBottom"
+            app:layout_constraintEnd_toEndOf="@id/guidelineButtonRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineButtonLeft"
+            app:layout_constraintTop_toTopOf="@id/guidelineButtonTop" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineFTPLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineButtonLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.35" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineButtonRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.65" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineFTPRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.95" />
+
+
+        <!--Horizontální guidy-->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineHeadLineTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.00" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineHeadLineBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.12" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineFrequencyHeadlineBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.17" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineFrequencyBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.30" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineFTPHeadlineBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.35" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineButtonTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.92" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineButtonBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.98" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

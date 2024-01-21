@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+<RelativeLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="6dp">
+
+    <!--Nadpis aktivity-->
+    <TextView
+        android:id="@+id/Nadpis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/informace_o_telefonu"
+        android:textAlignment="center"
+        android:textColor="@color/da_blue"
+        android:textSize="50sp"
+        android:layout_marginStart="-6dp"/>
+
+    <!--Model telefonu-->
+    <TextView
+        android:id="@+id/ModelInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Nadpis"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="25dp"
+        />
+
+    <!--Akcelometr-->
+    <TextView
+        android:id="@+id/Senzor_Akcelometr_Nadpis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ModelInfo"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="25dp"/>
+    <TextView
+        android:id="@+id/Senzor_Akcelometr_Data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Senzor_Akcelometr_Nadpis"/>
+
+    <!--Lineární akcelometr-->
+    <TextView
+        android:id="@+id/Senzor_Linearni_Akcelometr_Nadpis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Senzor_Akcelometr_Data"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="25dp"/>
+    <TextView
+        android:id="@+id/Senzor_Linearni_Akcelometr_Data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Senzor_Linearni_Akcelometr_Nadpis"/>
+
+    <!--Gravitace-->
+    <TextView
+        android:id="@+id/Senzor_Gravitace_Nadpis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Senzor_Linearni_Akcelometr_Data"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="25dp"/>
+    <TextView
+        android:id="@+id/Senzor_Gravitace_Data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Senzor_Gravitace_Nadpis"/>
+
+    <!--Gyroskop-->
+    <TextView
+        android:id="@+id/Senzor_Gyroskop_Nadpis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Senzor_Gravitace_Data"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="25dp"/>
+    <TextView
+        android:id="@+id/Gyroskop_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Senzor_Gyroskop_Nadpis"
+        android:layout_marginBottom="25dp"/>
+
+</RelativeLayout>
+</ScrollView>

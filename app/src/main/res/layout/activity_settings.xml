@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+    <TextView
+        android:id="@+id/Headline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Title_Activity_Nastaveni"
+        android:textAlignment="center"
+        android:textSize="40sp"
+        android:textColor="@color/da_blue"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/SpeedHeadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Headline"
+        android:layout_marginTop="60dp"
+        android:text="Doporučené spoždění snímání (ms)"
+        android:textSize="20sp"
+        android:textAlignment="center"/>
+
+    <!--<SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@+id/SpeedHeadline"
+        android:layout_marginTop="20dp"/>
+    <TextView
+        android:id="@+id/seekBarData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seekBar"
+        android:textSize="20sp"
+        android:textAlignment="center"/>-->
+
+    <EditText
+        android:id="@+id/LatenceEditText"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/Headline"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="130dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="130dp"
+        android:hint="20"
+        android:textAlignment="center"
+        android:inputType="number"/>
+
+
+
+    <TextView
+        android:id="@+id/FTPHeadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/LatenceEditText"
+        android:layout_marginTop="40dp"
+        android:text="FTP nastavení"
+        android:textSize="30sp"
+        android:textAlignment="center"/>
+
+    <EditText
+        android:id="@+id/FTP_Host"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTPHeadline"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="20dp"
+        android:hint="Host"
+        android:inputType="textNoSuggestions"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textColorHint="@color/basic" />
+
+    <EditText
+        android:id="@+id/FTP_Username"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTP_Host"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="40dp"
+        android:hint="Jméno"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textColorHint="@color/basic"
+        android:inputType="textNoSuggestions"/>
+
+    <EditText
+        android:id="@+id/FTP_Password"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTP_Username"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="40dp"
+        android:hint="Heslo"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textColorHint="@color/basic" />
+
+    <EditText
+        android:id="@+id/FTP_Directory"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTP_Password"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="40dp"
+        android:hint="Umístění"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textColorHint="@color/basic"
+        android:inputType="textNoSuggestions"/>
+
+    <EditText
+        android:id="@+id/FTP_Port"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTP_Directory"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="80dp"
+        android:hint="Port"
+        android:inputType="textNoSuggestions"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textColorHint="@color/basic" />
+
+    <Button
+        android:id="@+id/SaveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="74dp"
+        android:layout_marginEnd="150dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/da_blue"
+        android:gravity="center"
+        android:shadowColor="@color/da_blue"
+        android:text="@string/Button_Ulozit"
+        android:textColor="@color/white"
+        android:layout_below="@id/FTP_Port"/>
+
+</RelativeLayout>
+</ScrollView>

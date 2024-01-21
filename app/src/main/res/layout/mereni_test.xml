@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--Nadpis-->
+    <TextView
+        android:id="@+id/Nadpis"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="0dp"
+        android:autoSizeTextType="uniform"
+        android:text="Měření"
+        android:textAlignment="center"
+        android:textColor="@color/da_blue"
+        app:layout_constraintBottom_toBottomOf="@id/mereniGuidelineHeadlineBottom"
+        app:layout_constraintEnd_toEndOf="@id/mereniGuidelineRight"
+        app:layout_constraintStart_toStartOf="@id/mereniGuidelineLeft"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <GridLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:columnCount="2"
+        android:rowCount="2"
+        app:layout_constraintBottom_toBottomOf="@id/mereniGuidelineCheckBoxesBottom"
+        app:layout_constraintEnd_toEndOf="@id/mereniGuidelineRight"
+        app:layout_constraintStart_toStartOf="@id/mereniGuidelineLeft"
+        app:layout_constraintTop_toTopOf="@id/mereniGuidelineHeadlineBottom">
+
+        <CheckBox
+            android:id="@+id/CK1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="1"
+            android:layout_rowWeight="2"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="5dp"
+            android:autoSizeMaxTextSize="25sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
+            android:buttonTint="@color/da_blue"
+            android:text="@string/CheckBox_Linearni_Akcelometr"
+            android:textColor="@color/da_blue" />
+
+        <CheckBox
+            android:id="@+id/CK2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="25sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
+            android:buttonTint="@color/da_blue"
+            android:text="@string/Checkbox_Akcelometr"
+            android:textColor="@color/da_blue" />
+
+        <CheckBox
+            android:id="@+id/CK3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="25sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
+            android:buttonTint="@color/da_blue"
+            android:text="@string/CheckBox_Gyroskop"
+            android:textColor="@color/da_blue" />
+
+    </GridLayout>
+
+    <GridLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="@id/mereniGuidelineLeft"
+        app:layout_constraintEnd_toEndOf="@id/mereniGuidelineRight"
+        app:layout_constraintTop_toTopOf="@id/mereniGuidelineCheckBoxesBottom"
+        app:layout_constraintBottom_toBottomOf="@id/mereniGuidelineValuesBottom"
+        android:layout_margin="5dp"
+        android:columnCount="3"
+        android:rowCount="4">
+        <!--Nadpisy pro bloky dat-->
+        <TextView
+            android:id="@+id/Linearni_Akcelometr_Nadpis_Data"
+            android:autoSizeTextType="uniform"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="Lin. akcelometr"
+            android:textColor="@color/basic"
+            android:textAlignment="center"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+        <TextView
+            android:id="@+id/Akcelometr_Nadpis_Data"
+            android:autoSizeTextType="uniform"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="Akcelometr"
+            android:textColor="@color/basic"
+            android:textAlignment="center"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+        <TextView
+            android:id="@+id/Gyroskop_Nadpis_Data"
+            android:autoSizeTextType="uniform"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="Gyroskop"
+            android:textColor="@color/basic"
+            android:textAlignment="center"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+
+        <!--Data pro lineární akcelometr-->
+        <TextView
+            android:id="@+id/laSensorDataX"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="1"
+            android:layout_rowWeight="2"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"
+            />
+
+        <TextView
+            android:id="@+id/laSensorDataY"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="2"
+            android:layout_rowWeight="2"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+
+        <TextView
+            android:id="@+id/laSensorDataZ"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="3"
+            android:layout_rowWeight="2"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+        <!--Data pro akcelometr-->
+        <TextView
+            android:id="@+id/aSensorDataX"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+        <TextView
+            android:id="@+id/aSensorDataY"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="2"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+        <TextView
+            android:id="@+id/aSensorDataZ"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="3"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+
+        <!--Data pro gyroskop-->
+        <TextView
+            android:id="@+id/gSensorDataX"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="1"
+            android:layout_rowWeight="1"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+
+        <TextView
+            android:id="@+id/gSensorDataY"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="2"
+            android:layout_rowWeight="1"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+
+        <TextView
+            android:id="@+id/gSensorDataZ"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
+            android:textColor="@color/basic"
+            android:autoSizeTextType="uniform"
+            android:layout_row="3"
+            android:layout_rowWeight="1"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="4sp"
+            android:autoSizeStepGranularity="2sp"/>
+    </GridLayout>
+    <TextView
+        android:id="@+id/TimeRun"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textColor="@color/basic"
+        android:text="Čas běhu:"
+        android:textAlignment="center"
+        android:paddingTop="10dp"
+        app:layout_constraintStart_toStartOf="@id/mereniGuidelineButtonLeft"
+        app:layout_constraintEnd_toEndOf="@id/mereniGuidelineButtonRight"
+        app:layout_constraintTop_toTopOf="@id/mereniGuidelineValuesBottom"
+        app:layout_constraintBottom_toTopOf="@id/TimeRunData"/>
+    <TextView
+        android:id="@+id/TimeRunData"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="34sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeStepGranularity="4sp"
+        app:layout_constraintStart_toStartOf="@id/mereniGuidelineLeft"
+        app:layout_constraintEnd_toEndOf="@id/mereniGuidelineRight"
+        app:layout_constraintTop_toBottomOf="@id/TimeRun"
+        app:layout_constraintBottom_toBottomOf="@id/mereniGuidelineTimeBottom"/>
+
+    <EditText
+        android:id="@+id/nazevSouboru"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:hint="Název souboru..."
+        android:inputType="text"
+        android:outlineSpotShadowColor="@color/da_blue"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textColorHint="@color/basic"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="24sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toStartOf="@id/mereniGuidelineButtonLeft"
+        app:layout_constraintEnd_toEndOf="@id/mereniGuidelineButtonRight"
+        app:layout_constraintTop_toTopOf="@id/mereniGuidelineTimeBottom"
+        app:layout_constraintBottom_toTopOf="@id/CK4"/>
+
+    <CheckBox
+        android:id="@+id/CK4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Odeslat soubor o hardwaru"
+        android:autoSizeTextType="uniform"
+        android:paddingHorizontal="10dp"
+        android:autoSizeMaxTextSize="25sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeStepGranularity="2sp"
+        android:textColor="@color/da_blue"
+        android:buttonTint="@color/da_blue"
+        app:layout_constraintStart_toStartOf="@id/mereniGuidelineLeft"
+        app:layout_constraintEnd_toEndOf="@id/mereniGuidelineRight"
+        app:layout_constraintTop_toBottomOf="@id/nazevSouboru"
+        app:layout_constraintBottom_toTopOf="@id/startButton"/>
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/da_blue"
+        android:shadowColor="@color/da_blue"
+        android:text="Start"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="@id/mereniGuidelineButtonLeft"
+        app:layout_constraintEnd_toEndOf="@id/mereniGuidelineButtonRight"
+        app:layout_constraintTop_toBottomOf="@id/CK4"
+        app:layout_constraintBottom_toBottomOf="@id/mereniGuidelineButtonBottom"
+        android:layout_marginHorizontal="10dp"/>
+
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineButtonLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.30" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineButtonRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.70" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineHeadlineBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineCheckBoxesBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineValuesBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.6" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineTimeBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mereniGuidelineButtonBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.98" />
+</androidx.constraintlayout.widget.ConstraintLayout>
