@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -13,7 +12,7 @@ import androidx.activity.ComponentActivity
 class Settings : ComponentActivity() {
     private lateinit var saveButton: Button
     private lateinit var latencyEdit: EditText
-    private lateinit var checkFTP: CheckBox
+    //private lateinit var checkFTP: CheckBox
     private val min = MainActivity.SensorHelper.accelerometerMinDelay.toFloat()
     //FTP Data
     private lateinit var FTPHeadline: TextView
@@ -25,28 +24,28 @@ class Settings : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_test)
+        setContentView(R.layout.activity_settings)
 
         latencyEdit = findViewById(R.id.LatenceEditText)
         saveButton = findViewById(R.id.SaveButton)
-        checkFTP = findViewById(R.id.CheckFTP)
+       // checkFTP = findViewById(R.id.CheckFTP)
         FTPHeadline = findViewById(R.id.FTPHeadline)
         FTPHost = findViewById(R.id.FTP_Host)
         FTPName = findViewById(R.id.FTP_Username)
         FTPPassword = findViewById(R.id.FTP_Password)
         FTPDirectory = findViewById(R.id.FTP_Directory)
         FTPPort = findViewById(R.id.FTP_Port)
-        FTPHost.visibility = View.INVISIBLE
+        /*FTPHost.visibility = View.INVISIBLE
         FTPName.visibility = View.INVISIBLE
         FTPPassword.visibility = View.INVISIBLE
         FTPDirectory.visibility = View.INVISIBLE
         FTPPort.visibility = View.INVISIBLE
-        FTPHeadline.visibility = View.INVISIBLE
+        FTPHeadline.visibility = View.INVISIBLE*/
         loadData()
         saveButton.setOnClickListener {
             saveData()
         }
-        checkFTP.setOnCheckedChangeListener { _, isChecked ->
+        /*checkFTP.setOnCheckedChangeListener { _, isChecked ->
             if(isChecked) {
                 FTPShow()
             }else{
@@ -57,7 +56,7 @@ class Settings : ComponentActivity() {
                 FTPPort.visibility = View.INVISIBLE
                 FTPHeadline.visibility = View.INVISIBLE
             }
-        }
+        }*/
     }
 
     private fun saveData() {
@@ -67,7 +66,7 @@ class Settings : ComponentActivity() {
             val editor = sharedPreferences.edit()
             editor.apply {
                 putInt("INT_KEY", savedFrequency)
-                putBoolean("FTP_CHECK", checkFTP.isChecked)
+                //putBoolean("FTP_CHECK", checkFTP.isChecked)
             }.apply()
             Toast.makeText(this, "Preference uloženy", Toast.LENGTH_SHORT).show()
         } else {
@@ -77,7 +76,7 @@ class Settings : ComponentActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
-        if (checkFTP.isChecked){
+       /* if (checkFTP.isChecked){
             val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
             editor.apply {
@@ -88,7 +87,7 @@ class Settings : ComponentActivity() {
                 putString("port", FTPPort.text.toString())
                 putBoolean("FTP_CHECK", checkFTP.isChecked)
             }.apply()
-        }
+        }*/
         }
 
 
@@ -97,10 +96,10 @@ class Settings : ComponentActivity() {
         val savedData = sharedPreferences.getInt("INT_KEY", 200)
 
         latencyEdit.setText(savedData.toString())
-        checkFTP.isChecked = sharedPreferences.getBoolean("FTP_CHECK", true)
-        if (checkFTP.isChecked) {
+        //checkFTP.isChecked = sharedPreferences.getBoolean("FTP_CHECK", true)
+       /* if (checkFTP.isChecked) {
             FTPShow()
-        }
+        }*/
         FTPHost.setText(sharedPreferences.getString("host", null))
         FTPName.setText(sharedPreferences.getString("username", null))
         FTPPassword.setText(sharedPreferences.getString("password", null))
