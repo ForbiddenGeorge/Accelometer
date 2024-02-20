@@ -3,12 +3,12 @@ package com.example.accelometer
 import CustomDialog
 import android.annotation.SuppressLint
 import android.content.Context
-import android.hardware.SensorManager
 import android.hardware.Sensor
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import android.widget.TextView
+import android.hardware.SensorManager
 import android.os.Build
+import android.os.Bundle
+import android.widget.TextView
+import androidx.activity.ComponentActivity
 
 class Sensory : ComponentActivity() {
     //založení proměnných
@@ -89,39 +89,23 @@ class Sensory : ComponentActivity() {
 
     //Pokud nenajde senzory, update UI
     @SuppressLint("SetTextI18n")
-    private fun notThere(){
+    fun notThere(){
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         if (gravitace.text == null) {
             gravitace.text = "Gravitační senzor: Nepřítomen"
             warning = true
-            val editor = sharedPreferences.edit()
-            editor.apply {
-                putBoolean("Gravity_check", false)
-            }.apply()
         }
         if (gyroskop.text == null) {
             gyroskop.text = "Gyroskop: Nepřítomen"
             warning = true
-            val editor = sharedPreferences.edit()
-            editor.apply {
-                putBoolean("Gyroscope_check", false)
-            }.apply()
         }
         if (akcelometr.text == null) {
             akcelometr.text = "Akcelometr: Nepřítomen"
             warning = true
-            val editor = sharedPreferences.edit()
-            editor.apply {
-                putBoolean("Accelometer_check", false)
-            }.apply()
         }
         if (linearniAkcelometr.text == null) {
             linearniAkcelometr.text = "Lineární akcelerometr Nepřítomen"
             warning = true
-            val editor = sharedPreferences.edit()
-            editor.apply {
-                putBoolean("Linear_Accelometr_check", false)
-            }.apply()
         }
         if(warning){
             CustomDialog.showMessage(this, "Senzory nenalezeny",

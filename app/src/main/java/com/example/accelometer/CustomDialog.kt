@@ -20,6 +20,7 @@ class CustomDialog {
 
             // Show the dialog
             dialog.show()
+            print("Zobrazeno dialogové okno")
         }
     }
 }

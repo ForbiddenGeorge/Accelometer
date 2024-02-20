@@ -67,6 +67,12 @@ class Settings : ComponentActivity() {
             editor.apply {
                 putInt("INT_KEY", savedFrequency)
                 //putBoolean("FTP_CHECK", checkFTP.isChecked)
+                putString("host", FTPHost.text.toString())
+                putString("username", FTPName.text.toString())
+                putString("password", FTPPassword.text.toString())
+                putString("directory", FTPDirectory.text.toString())
+                putString("port", FTPPort.text.toString())
+                //putBoolean("FTP_CHECK", checkFTP.isChecked)
             }.apply()
             Toast.makeText(this, "Preference uloženy", Toast.LENGTH_SHORT).show()
         } else {

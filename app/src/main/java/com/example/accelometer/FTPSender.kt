@@ -1,4 +1,6 @@
+
 import android.content.Context
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import org.apache.commons.net.ftp.FTP
@@ -6,10 +8,8 @@ import org.apache.commons.net.ftp.FTPClient
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
-import android.os.Handler
-import android.widget.Toast
-
 class FTPSender {
 
     private lateinit var host: String
@@ -21,13 +21,13 @@ class FTPSender {
     private lateinit var remoteFileName: String
     private var hardwareSend: Boolean = false
     private lateinit var context: Context
+    private var status: String = ""
     private val mainHandler = Handler(Looper.getMainLooper())
     fun init(
         context: Context,
         localFilePath: String,
         remoteFileName: String,
-        hardwareSend: Boolean,
-        defaultPath: String
+        hardwareSend: Boolean
     ) {
         this.context = context
         val sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
@@ -39,20 +39,33 @@ class FTPSender {
         this.localFilePath = localFilePath
         this.remoteFileName = remoteFileName
         this.hardwareSend = hardwareSend
-        this.defaultDirectory = defaultPath
         Log.d("FTPSender", "Local File Path: $localFilePath")
-
     }
 
-    fun uploadFileToFTPAsync() {
+    fun uploadFileToFTPAsync(): String {
+        val latch = CountDownLatch(1)
+        var status = ""
+
         val executor = Executors.newSingleThreadExecutor()
         executor.execute {
-            uploadFileToFTP()
+            status = uploadFileToFTP()
+            latch.countDown()
         }
+
+        try {
+            // Wait for the latch to count down to zero
+            latch.await()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
+        Log.d("Status in FTP main thread", status)
+        return status
     }
 
-    private fun uploadFileToFTP() {
+    private fun uploadFileToFTP(): String {
         val ftpClient = FTPClient()
+        status = ""
         try {
             // Connect to FTP server
             ftpClient.connect(host, port.toInt())
@@ -61,33 +74,39 @@ class FTPSender {
             // Set transfer mode and type
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
             ftpClient.enterLocalPassiveMode()
-            Log.d("FTP","Nastaveno")
             // Change working directory if needed
-            //ftpClient.changeWorkingDirectory(defaultDirectory)
-
+            ftpClient.changeWorkingDirectory(defaultDirectory)
+            Log.d("FTP","Nastaveno")
             // Upload file
-            val incantate = localFilePath +"/" + remoteFileName
+            val incantate = localFilePath + "/" + remoteFileName
+            println(incantate)
+            println(defaultDirectory)
             val localFile = File(incantate)
             Log.d("FTP", "Připraveno pro poslání")
 
             FileInputStream(localFile).use { inputStream ->
                 ftpClient.storeFile(remoteFileName, inputStream)
-
-                if (hardwareSend) {
+            }
+            if (hardwareSend) {
+                val hardwareFileFind = localFilePath + "/" + "Device_Hardware_Information.txt"
+                val hardwareFile = File(hardwareFileFind)
+                FileInputStream(hardwareFile).use { inputStream ->
                     ftpClient.storeFile("Device_Hardware_Information.txt", inputStream)
-                    Log.d("FTP","Hardwarový soubor úspěšně nahrán")
                 }
+                Log.d("FTP","Hardwarový soubor úspěšně nahrán")
             }
 
             // Logout and disconnect
+            println("Soubor nahrán")
             ftpClient.logout()
             ftpClient.disconnect()
-            println("Soubor nahrán")
+            println("Odpojeno")
 
         } catch (e: IOException) {
             println("Error during FTP upload: ${e.message}")
             ftpClient.disconnect()
             Log.d("FTP", "Odpojeno po erroru")
+            status = e.message.toString()
         } finally {
             // Ensure the FTP client is disconnected in case of an exception
             if (ftpClient.isConnected) {
@@ -95,8 +114,11 @@ class FTPSender {
                     ftpClient.disconnect()
                 } catch (e: IOException) {
                     println("Error disconnecting FTP client: ${e.message}")
+                    status = e.message.toString()
                 }
             }
         }
+        Log.d("Status v FTP", status)
+        return status
     }
 }

@@ -1,16 +1,15 @@
 package com.example.accelometer
 
 import android.content.Context
-import android.hardware.SensorManager
 import android.content.Intent
 import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.cardview.widget.CardView
-
 
 class MainActivity : ComponentActivity(), View.OnClickListener {
     //Zavedení proměnných
@@ -38,7 +37,6 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
 
         //Získání hardwarového limitu pro senzory
         findMinDelay()
-
         //Získání povolení k přístupu do externího úložiště
         PermissionUtils.checkAndRequestStoragePermission(this)
 
@@ -68,22 +66,39 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
     //Najití nejvetší minimální vzorkovací frekvence ze seznamu chtěných senzorů
     private fun findMinDelay() {
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
+        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         for (sensor in deviceSensors) {
             when (sensor.type) {
                 Sensor.TYPE_ACCELEROMETER ->{
+                    val editor = sharedPreferences.edit()
+                    editor.apply {
+                        putBoolean("Accelometer_check", true)
+                    }.apply()
                     SensorHelper.accelerometerMinDelay = sensor.minDelay
                 }
                 Sensor.TYPE_LINEAR_ACCELERATION ->{
+                    val editor = sharedPreferences.edit()
+                    editor.apply {
+                        putBoolean("Linear_Accelometr_check", true)
+                    }.apply()
                     if (sensor.minDelay > SensorHelper.accelerometerMinDelay){
                         SensorHelper.accelerometerMinDelay = sensor.minDelay
                     }
                 }
                 Sensor.TYPE_GRAVITY ->{
+                    val editor = sharedPreferences.edit()
+                    editor.apply {
+                        putBoolean("Gravity_check", true)
+                    }.apply()
                     if (sensor.minDelay > SensorHelper.accelerometerMinDelay){
                         SensorHelper.accelerometerMinDelay = sensor.minDelay
                     }
                 }
                 Sensor.TYPE_GYROSCOPE->{
+                    val editor = sharedPreferences.edit()
+                    editor.apply {
+                        putBoolean("Gyroscope_check", true)
+                    }.apply()
                     if (sensor.minDelay > SensorHelper.accelerometerMinDelay){
                         SensorHelper.accelerometerMinDelay = sensor.minDelay
                     }
@@ -92,6 +107,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         }
         Log.d("minDelay", "Min delay was found, it is ${SensorHelper.accelerometerMinDelay} μs")
     }
+
 
 }
 

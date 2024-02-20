@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.accelometer"
-        minSdk = 26
+        minSdk = 25
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 30
         versionCode = 1

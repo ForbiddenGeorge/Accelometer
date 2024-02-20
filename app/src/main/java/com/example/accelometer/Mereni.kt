@@ -1,5 +1,6 @@
 package com.example.accelometer
 
+import CustomDialog
 import FTPSender
 import Writer
 import android.Manifest
@@ -99,7 +100,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
     private var scheduledExecutor: ScheduledExecutorService? = null
     //FTP
     public val ftpSender = FTPSender()
-
+    private lateinit var erorek:String
     //Inicializace
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +116,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
         checkBoxGyroskop = findViewById(R.id.CK3)
         hardwareSoubor = findViewById(R.id.CK4)
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        boll = sharedPreferences.getBoolean("Gyroscope_check", true)
+        boll = sharedPreferences.getBoolean("Gyroscope_check", false)
         if (!boll){
             checkBoxGyroskop.isClickable = false
         }else{
@@ -127,7 +128,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
         }else{
             aSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!!
         }
-        boll = sharedPreferences.getBoolean("Linear_Accelometr_check", true)
+        boll = sharedPreferences.getBoolean("Linear_Accelometr_check", false)
         if (!boll){
             checkBoxLinearniAkcelometr.isClickable = false
 
@@ -236,11 +237,20 @@ class Mereni : ComponentActivity(), SensorEventListener {
         Toast.makeText(this, "Soubor $jmenoSouboruCele uložen!", Toast.LENGTH_LONG).show()
         val directory = csvWriter.getAppSubdirectory().toString()
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        val ftp = sharedPreferences.getBoolean("FTP_CHECK", true)
+       // val ftp = sharedPreferences.getBoolean("FTP_CHECK", true)
+        val ftp = true
         if(ftp)
         {
-            ftpSender.init(applicationContext, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked, directory)
-            ftpSender.uploadFileToFTPAsync()
+            ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked)
+            erorek = ftpSender.uploadFileToFTPAsync()
+        }
+        Log.d("Erorek", erorek)
+        if (erorek == "")
+        {
+            Toast.makeText(this,"Soubor úspěšně odeslán",Toast.LENGTH_SHORT).show()
+
+        }else{
+            CustomDialog.showMessage(this,"Chyba",erorek)
         }
         resetingValues()
     }
