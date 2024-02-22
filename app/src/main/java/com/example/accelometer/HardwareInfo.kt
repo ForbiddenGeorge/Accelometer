@@ -1,16 +1,16 @@
 package com.example.accelometer
 
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import Writer
 import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Build
 import android.util.Log
 
 object HardwareInfo {
-    private var jmenoSouboru: String = "Device_Hardware_Information.txt"
-
+    private var jmenoSouboru: String = "DHI_" + Build.MODEL +".txt"
     fun createHardwareInfo(sensorManager: SensorManager, context: Context) {
+
         // Založení instance Writeru a vytvoření souboru
         val txtWriter = Writer(context)
         txtWriter.createFile(jmenoSouboru)
@@ -44,7 +44,7 @@ object HardwareInfo {
 
         // Uzavření souboru
         txtWriter.closeFile()
-        Log.d("Hardware Info", "Device_Hardware_Information.txt byl vytvořen a uložen")
+        Log.d("Hardware Info", "DHI_" + Build.MODEL + ".txt byl vytvořen a uložen")
     }
 
     //Funkce pro správné formátovaní dat do souboru o senzorech
@@ -65,6 +65,7 @@ object HardwareInfo {
         txtWriter.writeHardwareData(fileGRData)
         val divider = arrayOf("-------------------------------\n\n")
         txtWriter.writeHardwareData(divider)
+
     }
 
     //Získání modelu telefonu

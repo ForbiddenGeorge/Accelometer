@@ -1,5 +1,6 @@
 
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -88,10 +89,10 @@ class FTPSender {
                 ftpClient.storeFile(remoteFileName, inputStream)
             }
             if (hardwareSend) {
-                val hardwareFileFind = localFilePath + "/" + "Device_Hardware_Information.txt"
+                val hardwareFileFind = localFilePath + "/" + "DHI_" + Build.MODEL + ".txt"
                 val hardwareFile = File(hardwareFileFind)
                 FileInputStream(hardwareFile).use { inputStream ->
-                    ftpClient.storeFile("Device_Hardware_Information.txt", inputStream)
+                    ftpClient.storeFile("DHI_" + Build.MODEL + ".txt", inputStream)
                 }
                 Log.d("FTP","Hardwarový soubor úspěšně nahrán")
             }

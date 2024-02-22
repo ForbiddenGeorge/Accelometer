@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -40,15 +41,23 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         //Získání povolení k přístupu do externího úložiště
         PermissionUtils.checkAndRequestStoragePermission(this)
 
-        //Založení .txt souboru s infem o telefonu
-        HardwareInfo.createHardwareInfo(sensorManager, this)
-
         //Potvrzení že máme povolení k externímu úložišti
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         val isPermissionGranted = sharedPreferences.getBoolean("storage_permission_granted", false)
         if(!isPermissionGranted)
         {
             Toast.makeText(this, "Bez povolení nelze data ukládat do dokumentů", Toast.LENGTH_LONG).show()
+        }
+
+        //Založení .txt souboru s infem o telefonu
+        val DHI = sharedPreferences.getString("DHI", null)
+        if(DHI == null){
+            HardwareInfo.createHardwareInfo(sensorManager, this)
+            val editor = sharedPreferences.edit()
+            editor.apply {
+                putString("DHI", "DHI_" + Build.MODEL +".txt")
+
+            }.apply()
         }
     }
 

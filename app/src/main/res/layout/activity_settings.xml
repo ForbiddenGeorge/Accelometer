@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white">
@@ -27,7 +27,8 @@
         android:layout_marginTop="60dp"
         android:text="Doporučené spoždění snímání (ms)"
         android:textSize="20sp"
-        android:textAlignment="center"/>
+        android:paddingLeft="40dp"
+        android:textAlignment="textStart"/>
 
     <!--<SeekBar
         android:id="@+id/seekBar"
@@ -45,16 +46,16 @@
 
     <EditText
         android:id="@+id/LatenceEditText"
-        android:layout_width="150dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/Headline"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="130dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
         android:layout_marginTop="100dp"
-        android:layout_marginEnd="130dp"
         android:hint="20"
-        android:textAlignment="center"
+        android:textAlignment="textStart"
         android:inputType="number"/>
 
 
@@ -67,21 +68,23 @@
         android:layout_marginTop="40dp"
         android:text="FTP nastavení"
         android:textSize="30sp"
-        android:textAlignment="center"/>
+        android:textAlignment="textStart"
+        android:paddingLeft="40dp"
+        />
 
     <EditText
         android:id="@+id/FTP_Host"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/FTPHeadline"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
         android:layout_marginHorizontal="80dp"
         android:layout_marginTop="20dp"
         android:hint="Host"
         android:inputType="textNoSuggestions"
         android:maxLines="1"
-        android:textAlignment="center"
+        android:textAlignment="textStart"
         android:textColor="@color/black"
         android:textColorHint="@color/basic" />
 
@@ -90,17 +93,17 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/FTP_Host"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
         android:layout_marginHorizontal="80dp"
         android:layout_marginTop="40dp"
         android:hint="Jméno"
-        android:textAlignment="center"
+        android:textAlignment="textStart"
         android:textColor="@color/black"
         android:textColorHint="@color/basic"
         android:inputType="textNoSuggestions"/>
 
-    <EditText
+    <!--<EditText
         android:id="@+id/FTP_Password"
         android:layout_width="200dp"
         android:layout_height="50dp"
@@ -113,24 +116,33 @@
         android:inputType="textPassword"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textColorHint="@color/basic" />
+        android:textColorHint="@color/basic" />-->
 
-    <EditText
-        android:id="@+id/FTP_Directory"
-        android:layout_width="200dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/FTP_Password"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_below="@id/FTP_Password"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:layout_below="@id/FTP_Username"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
         android:layout_marginHorizontal="80dp"
         android:layout_marginTop="40dp"
-        android:hint="Umístění"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textColorHint="@color/basic"
-        android:inputType="textNoSuggestions"/>
+        app:passwordToggleEnabled="true"
+        android:hint="Heslo">
 
-    <EditText
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            android:fontFamily="sans-serif"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--<EditText
         android:id="@+id/FTP_Port"
         android:layout_width="200dp"
         android:layout_height="50dp"
@@ -145,7 +157,45 @@
         android:inputType="textNoSuggestions"
         android:textAlignment="center"
         android:textColor="@color/black"
+        android:textColorHint="@color/basic" />-->
+
+    <EditText
+        android:id="@+id/FTP_Directory"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTP_Password"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="40dp"
+        android:hint="Umístění"
+        android:inputType="textNoSuggestions"
+        android:textAlignment="textStart"
+        android:textColor="@color/black"
         android:textColorHint="@color/basic" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/FTP_Port"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTP_Directory"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="43dp"
+        app:hintEnabled="true"
+        android:hint="Port">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/portEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:textColor="@color/black"
+        android:textAlignment="textStart"
+        android:textColorHint="@color/basic"/>
+
+</com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/SaveButton"
