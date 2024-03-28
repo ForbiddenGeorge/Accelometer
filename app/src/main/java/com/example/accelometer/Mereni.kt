@@ -10,6 +10,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -209,6 +210,8 @@ class Mereni : ComponentActivity(), SensorEventListener {
             jmenoSouboruCele = "$jmenoSouboruInput.csv"
             Log.d("File name", jmenoSouboruCele)
             csvWriter.createFile(jmenoSouboruCele)
+            val DHI_name = arrayOf(Build.MODEL)
+            csvWriter.writeData(DHI_name)
             startTimeMillis = System.currentTimeMillis()
             startTime = SystemClock.elapsedRealtime()
             updateStopwatch()

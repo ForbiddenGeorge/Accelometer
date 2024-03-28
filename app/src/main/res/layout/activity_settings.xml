@@ -44,7 +44,7 @@
         android:textSize="20sp"
         android:textAlignment="center"/>-->
 
-    <EditText
+    <!--<EditText
         android:id="@+id/LatenceEditText"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -56,7 +56,30 @@
         android:layout_marginTop="100dp"
         android:hint="20"
         android:textAlignment="textStart"
-        android:inputType="number"/>
+        android:inputType="number"/>-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/FTP_Latency"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/SpeedHeadline"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="40dp"
+        android:hint="Frekvence">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/latencyEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 
@@ -64,7 +87,7 @@
         android:id="@+id/FTPHeadline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/LatenceEditText"
+        android:layout_below="@+id/FTP_Latency"
         android:layout_marginTop="40dp"
         android:text="FTP nastavení"
         android:textSize="30sp"
@@ -72,7 +95,7 @@
         android:paddingLeft="40dp"
         />
 
-    <EditText
+    <!--<EditText
         android:id="@+id/FTP_Host"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -86,9 +109,33 @@
         android:maxLines="1"
         android:textAlignment="textStart"
         android:textColor="@color/black"
-        android:textColorHint="@color/basic" />
+        android:textColorHint="@color/basic" />-->
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/FTP_Host"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTPHeadline"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="40dp"
+        android:hint="Host">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/hostEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            android:inputType="text"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+   <!-- <EditText
         android:id="@+id/FTP_Username"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -101,7 +148,32 @@
         android:textAlignment="textStart"
         android:textColor="@color/black"
         android:textColorHint="@color/basic"
-        android:inputType="textNoSuggestions"/>
+        android:inputType="textNoSuggestions"/>-->
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/FTP_Username"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTP_Host"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="40dp"
+        android:hint="Uživatelské jméno">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/usernameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            android:inputType="text"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <!--<EditText
         android:id="@+id/FTP_Password"
@@ -159,7 +231,7 @@
         android:textColor="@color/black"
         android:textColorHint="@color/basic" />-->
 
-    <EditText
+    <!--<EditText
         android:id="@+id/FTP_Directory"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -172,7 +244,30 @@
         android:inputType="textNoSuggestions"
         android:textAlignment="textStart"
         android:textColor="@color/black"
-        android:textColorHint="@color/basic" />
+        android:textColorHint="@color/basic" />-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/FTP_Directory"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/FTP_Password"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginTop="40dp"
+        android:hint="Umístění">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/directoryEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            android:inputType="text"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/FTP_Port"
@@ -203,9 +298,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="150dp"
+        android:layout_marginStart="100dp"
         android:layout_marginTop="74dp"
-        android:layout_marginEnd="150dp"
+        android:layout_marginEnd="100dp"
         android:layout_marginBottom="10dp"
         android:background="@color/da_blue"
         android:gravity="center"

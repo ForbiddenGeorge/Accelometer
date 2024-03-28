@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -13,31 +12,31 @@ import com.google.android.material.textfield.TextInputLayout
 
 class Settings : ComponentActivity() {
     private lateinit var saveButton: Button
-    private lateinit var latencyEdit: EditText
+    private lateinit var latencyEdit: TextInputEditText
     //private lateinit var checkFTP: CheckBox
     private val min = MainActivity.SensorHelper.accelerometerMinDelay.toFloat()
     //FTP Data
     private lateinit var FTPHeadline: TextView
-    private lateinit var FTPHost: EditText
-    private lateinit var FTPName: EditText
+    private lateinit var FTPHost: TextInputEditText
+    private lateinit var FTPName: TextInputEditText
     private lateinit var FTPPassword: TextInputLayout
     private lateinit var FTPPasswordEdit: TextInputEditText
-    private lateinit var FTPDirectory: EditText
+    private lateinit var FTPDirectory: TextInputEditText
     private lateinit var FTPPort: TextInputEditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        latencyEdit = findViewById(R.id.LatenceEditText)
+        latencyEdit = findViewById(R.id.latencyEditText)
         saveButton = findViewById(R.id.SaveButton)
        // checkFTP = findViewById(R.id.CheckFTP)
         FTPHeadline = findViewById(R.id.FTPHeadline)
-        FTPHost = findViewById(R.id.FTP_Host)
-        FTPName = findViewById(R.id.FTP_Username)
+        FTPHost = findViewById(R.id.hostEditText)
+        FTPName = findViewById(R.id.usernameEditText)
         FTPPassword = findViewById(R.id.FTP_Password)
         FTPPasswordEdit = FTPPassword.findViewById(R.id.passwordEditText)
-        FTPDirectory = findViewById(R.id.FTP_Directory)
+        FTPDirectory = findViewById(R.id.directoryEditText)
         FTPPort = findViewById(R.id.portEditText)
         /*FTPHost.visibility = View.INVISIBLE
         FTPName.visibility = View.INVISIBLE
@@ -64,21 +63,23 @@ class Settings : ComponentActivity() {
     }
 
     private fun saveData() {
-        val savedFrequency = latencyEdit.text.toString().toInt()
-        if (savedFrequency >= (min / 1000)){
-            val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-            editor.apply {
-                putInt("INT_KEY", savedFrequency)
-                putString("host", FTPHost.text.toString())
-                putString("username", FTPName.text.toString())
-                putString("password", FTPPasswordEdit.text.toString())
-                putString("directory", FTPDirectory.text.toString())
-                putString("port", FTPPort.text.toString())
-                //putBoolean("FTP_CHECK", checkFTP.isChecked)
-            }.apply()
-            Toast.makeText(this, "Preference uloženy", Toast.LENGTH_SHORT).show()
-        } else {
+        if (latencyEdit.toString() != ""){
+            val savedFrequency = latencyEdit.text.toString().toInt()
+            println(savedFrequency)
+            if (savedFrequency >= (min / 1000)){
+                val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.apply {
+                    putInt("INT_KEY", savedFrequency)
+                    putString("host", FTPHost.text.toString())
+                    putString("username", FTPName.text.toString())
+                    putString("password", FTPPasswordEdit.text.toString())
+                    putString("directory", FTPDirectory.text.toString())
+                    putString("port", FTPPort.text.toString())
+                    //putBoolean("FTP_CHECK", checkFTP.isChecked)
+                }.apply()
+                Toast.makeText(this, "Preference uloženy", Toast.LENGTH_SHORT).show()
+        }else {
                 Toast.makeText(
                     this,
                     "Spoždění musí mít stejnou nebo vyšší hodnotu než ${min / 1000} ms",
@@ -97,7 +98,14 @@ class Settings : ComponentActivity() {
                 putBoolean("FTP_CHECK", checkFTP.isChecked)
             }.apply()
         }*/
-        }
+        }else{
+            Toast.makeText(
+                this,
+                "Spoždění musí mít stejnou nebo vyšší hodnotu než ${min / 1000} ms",
+                Toast.LENGTH_LONG
+            ).show()
+
+        }        }
 
 
     private fun loadData() {

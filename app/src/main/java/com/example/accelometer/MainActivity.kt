@@ -109,7 +109,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
                         putBoolean("Gyroscope_check", true)
                     }.apply()
                     if (sensor.minDelay > SensorHelper.accelerometerMinDelay){
-                        SensorHelper.accelerometerMinDelay = sensor.minDelay
+                        SensorHelper.accelerometerMinDelay = sensor.minDelay * 5
                     }
                 }
             }
