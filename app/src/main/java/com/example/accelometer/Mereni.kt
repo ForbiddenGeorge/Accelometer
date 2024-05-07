@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -101,7 +102,6 @@ class Mereni : ComponentActivity(), SensorEventListener {
     private var scheduledExecutor: ScheduledExecutorService? = null
     //FTP
     public val ftpSender = FTPSender()
-    private lateinit var erorek:String
     //Inicializace
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -225,6 +225,8 @@ class Mereni : ComponentActivity(), SensorEventListener {
 
     //Zastavení celého systému
     private fun stopSensor() {
+        var zprava: com.example.accelometer.Vysledek = com.example.accelometer.Vysledek(false, "", 0)
+
         isSensorRunning = false
         if(checkBoxLinearniAkcelometr.isChecked){
             sensorManager.unregisterListener(this, laSensor)
@@ -242,18 +244,23 @@ class Mereni : ComponentActivity(), SensorEventListener {
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
        // val ftp = sharedPreferences.getBoolean("FTP_CHECK", true)
         val ftp = true
+        //Must be await to check if an error occured
+        //
+        //
         if(ftp)
         {
             ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked)
-            erorek = ftpSender.uploadFileToFTPAsync()
+            zprava = runBlocking {
+                // Waiting for the FTP operation to finish and capturing its result
+                ftpSender.uploadFileToFTPAsync()
+            }
         }
-        Log.d("Erorek", erorek)
-        if (erorek == "")
+        if (zprava.status)
         {
             Toast.makeText(this,"Soubor úspěšně odeslán",Toast.LENGTH_SHORT).show()
 
         }else{
-            CustomDialog.showMessage(this,"Chyba",erorek)
+            CustomDialog.showMessage(this,"Chyba " + zprava.kod, zprava.chyba)
         }
         resetingValues()
     }

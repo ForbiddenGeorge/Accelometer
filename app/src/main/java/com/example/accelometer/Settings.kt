@@ -2,6 +2,7 @@ package com.example.accelometer
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -66,7 +67,7 @@ class Settings : ComponentActivity() {
         if (latencyEdit.toString() != ""){
             val savedFrequency = latencyEdit.text.toString().toInt()
             println(savedFrequency)
-            if (savedFrequency >= (min / 1000)){
+            if (savedFrequency >= ((min*3) / 1000)){
                 val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
                 editor.apply {
@@ -77,12 +78,13 @@ class Settings : ComponentActivity() {
                     putString("directory", FTPDirectory.text.toString())
                     putString("port", FTPPort.text.toString())
                     //putBoolean("FTP_CHECK", checkFTP.isChecked)
+                    Log.d("Ukládání",FTPHost.text.toString() + FTPName.text.toString() + FTPPasswordEdit.text.toString() + FTPDirectory.text.toString())
                 }.apply()
                 Toast.makeText(this, "Preference uloženy", Toast.LENGTH_SHORT).show()
         }else {
                 Toast.makeText(
                     this,
-                    "Spoždění musí mít stejnou nebo vyšší hodnotu než ${min / 1000} ms",
+                    "Spoždění musí mít stejnou nebo vyšší hodnotu než ${(min*3) / 1000} ms",
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -101,7 +103,7 @@ class Settings : ComponentActivity() {
         }else{
             Toast.makeText(
                 this,
-                "Spoždění musí mít stejnou nebo vyšší hodnotu než ${min / 1000} ms",
+                "Spoždění musí mít stejnou nebo vyšší hodnotu než ${(min*3) / 1000} ms",
                 Toast.LENGTH_LONG
             ).show()
 
@@ -110,7 +112,7 @@ class Settings : ComponentActivity() {
 
     private fun loadData() {
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        val savedData = sharedPreferences.getInt("INT_KEY", 200)
+        val savedData = sharedPreferences.getInt("INT_KEY", 100)
 
         latencyEdit.setText(savedData.toString())
         //checkFTP.isChecked = sharedPreferences.getBoolean("FTP_CHECK", true)
