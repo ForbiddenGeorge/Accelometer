@@ -4,4 +4,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="da_blue">#1D649A</color>
+    <color name="highlight">#E6E6E6</color>
 </resources>

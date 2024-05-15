@@ -5,11 +5,13 @@ import FTPSender
 import Writer
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -23,7 +25,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -49,11 +56,20 @@ class Mereni : ComponentActivity(), SensorEventListener {
     private lateinit var gSensorDataX: TextView
     private lateinit var gSensorDataY: TextView
     private lateinit var gSensorDataZ: TextView
+    //GPS
+    private lateinit var gps: Location
+    private lateinit var longitude: TextView
+    private lateinit var latitude: TextView
+    private lateinit var altitude: TextView
+    private lateinit var speed: TextView
+    private lateinit var satellites: TextView
+    private lateinit var gpsTime: TextView
     //Checkboxy
     private lateinit var checkBoxLinearniAkcelometr: CheckBox
     private lateinit var checkBoxAkcelometr: CheckBox
     private lateinit var checkBoxGyroskop: CheckBox
     private lateinit var hardwareSoubor: CheckBox
+    private lateinit var checkboxGPS: CheckBox
     private var boll: Boolean = false
     //soubor
     private val csvWriter = Writer(this)
@@ -71,6 +87,13 @@ class Mereni : ComponentActivity(), SensorEventListener {
     private var gFilteredX = 0f
     private var gFilteredY = 0f
     private var gFilteredZ = 0f
+    //GPS data
+    private var longitudeData: Double = 0.0
+    private var latitudeData: Double = 0.0
+    private var altitudeData: Double = 0.0
+    private var speedData = 0f
+    private var satellitesData = 0
+    private var gpsTimeData: Long = 0 //64bit int
     //filtrovací konstanta
     private val alpha = 0.2f
     //Časovač
@@ -108,6 +131,11 @@ class Mereni : ComponentActivity(), SensorEventListener {
         setContentView(R.layout.mereni_test)
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         PermissionUtils.checkAndRequestStoragePermission(this)
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+            0
+        )
         //// Inicializace proměnných ////
         //Ošetřit aby nepadala aplikace pokud tam není
         //Lineární akcelometr
@@ -115,6 +143,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
         checkBoxLinearniAkcelometr = findViewById(R.id.CK1)
         checkBoxAkcelometr = findViewById(R.id.CK2)
         checkBoxGyroskop = findViewById(R.id.CK3)
+        checkboxGPS = findViewById(R.id.CKGPS)
         hardwareSoubor = findViewById(R.id.CK4)
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         boll = sharedPreferences.getBoolean("Gyroscope_check", false)
@@ -158,6 +187,19 @@ class Mereni : ComponentActivity(), SensorEventListener {
         gSensorDataX.text = "x=0"
         gSensorDataY.text = "y=0"
         gSensorDataZ.text = "z=0"
+        //GPS
+        latitude = findViewById(R.id.GPS_Latitude_Data)
+        longitude = findViewById(R.id.GPS_Longitude_Data)
+        satellites = findViewById(R.id.GPS_Sattelite_Data)
+        speed = findViewById(R.id.GPS_Speed_Data)
+        altitude = findViewById(R.id.GPS_Altitude_Data)
+        gpsTime = findViewById(R.id.GPS_Time_Data)
+        latitude.text = "0° N/S"
+        longitude.text = "0° W/E"
+        altitude.text = "0 m"
+        satellites.text = "0"
+        speed.text = "0 m/s"
+        gpsTime.text = "00:00:00"
 
         startButton = findViewById(R.id.startButton)
         stopwatchTime = findViewById(R.id.TimeRunData)
@@ -170,6 +212,10 @@ class Mereni : ComponentActivity(), SensorEventListener {
             if (isSensorRunning) {
                 stopSensor()
             } else {
+                if(!ftpSender.isConnectedToInternet(this)){
+                    CustomDialog.showMessage(this,"Chyba připojení",
+                            "CZ:Zařízení není připojeno k internetu, pro FTP přenos, připojte se během měření k internetu")
+                }
                 startSensor()
             }
         }
@@ -189,7 +235,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
 
     //Počátek snímání, rozjetí celého systému
     private fun startSensor() {
-        if(checkBoxAkcelometr.isChecked || checkBoxGyroskop.isChecked || checkBoxLinearniAkcelometr.isChecked){
+        if(checkBoxAkcelometr.isChecked || checkBoxGyroskop.isChecked || checkBoxLinearniAkcelometr.isChecked || checkboxGPS.isChecked){
             if(checkBoxLinearniAkcelometr.isChecked){
                 sensorManager.registerListener(this, laSensor, latency * 1000)
             }
@@ -201,6 +247,12 @@ class Mereni : ComponentActivity(), SensorEventListener {
             }
             if( hardwareSoubor.isChecked){
                 hardwareSend = true
+            }
+            if(checkboxGPS.isChecked){
+                Intent(applicationContext, LocationService::class.java).apply {
+                    action = LocationService.ACTION_START
+                    startService(this)
+                }
             }
 
             isSensorRunning = true
@@ -237,6 +289,13 @@ class Mereni : ComponentActivity(), SensorEventListener {
         if( checkBoxGyroskop.isChecked){
             sensorManager.unregisterListener(this, gSensor)
         }
+        if(checkboxGPS.isChecked){
+            Intent(applicationContext, LocationService::class.java).apply {
+                action = LocationService.ACTION_STOP
+                startService(this)
+            }
+        }
+
         csvWriter.closeFile()
         scheduledExecutor?.shutdown()
         Toast.makeText(this, "Soubor $jmenoSouboruCele uložen!", Toast.LENGTH_LONG).show()
@@ -244,9 +303,6 @@ class Mereni : ComponentActivity(), SensorEventListener {
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
        // val ftp = sharedPreferences.getBoolean("FTP_CHECK", true)
         val ftp = true
-        //Must be await to check if an error occured
-        //
-        //
         if(ftp)
         {
             ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked)
@@ -307,12 +363,37 @@ class Mereni : ComponentActivity(), SensorEventListener {
             gSensorDataY.text = "y=${String.format(decimalFormat, gFilteredY)}"
             gSensorDataZ.text = "z=${String.format(decimalFormat, gFilteredZ)}"
         }
-
+        if(checkboxGPS.isChecked) {
+            observeLocationUpdates(this)
+        }
     }
 
     //Log když se změní přesnost senzoru
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
         Log.w("SensorAccuracy", "Accuracy has changed $accuracy")
+    }
+
+    private fun observeLocationUpdates(context: Context) {
+        val locationClient = DefaultLocationClient(
+            context,
+            LocationServices.getFusedLocationProviderClient(context)
+        )
+
+        locationClient.getLocationUpdates((latency * 10).toLong())
+            .onEach { location ->
+                // Perform actions with the received location data
+                latitudeData = location.latitude
+                longitudeData = location.longitude
+                speedData = location.speed
+                altitudeData = location.altitude
+                gpsTimeData = location.time
+                latitude.text = latitudeData.toString() + "°"
+                longitude.text = longitudeData.toString() + "°"
+                speed.text = speedData.toString() + " m/s"
+                altitude.text = altitudeData.toString() + "m"
+                gpsTime.text = gpsTimeData.toString() + "ms"
+            }
+            .launchIn(lifecycleScope) // Assuming you have a lifecycle scope available
     }
 
     //Zapnutí časovače pro přesné zaznamenávání dat
@@ -333,7 +414,8 @@ class Mereni : ComponentActivity(), SensorEventListener {
     private fun readAndWriteSensorData() {
         val currentTimeMillis = System.currentTimeMillis()
         val elapsedMillis = currentTimeMillis - startTimeMillis
-
+        /*satellitesData = getSatelliteCount(this)
+        satellites.text = satellitesData.toString()*/
         val sensorDataToFile = arrayOf(
             elapsedMillis.toString(),
             laFilteredX.toString(),
@@ -344,7 +426,13 @@ class Mereni : ComponentActivity(), SensorEventListener {
             aFilteredZ.toString(),
             gFilteredX.toString(),
             gFilteredY.toString(),
-            gFilteredZ.toString()
+            gFilteredZ.toString(),
+            latitudeData.toString(),
+            longitudeData.toString(), //Android má nějakou funkci pro konverzi těchto GPS dat do stringu, viz dokumentace
+            altitudeData.toString(),
+            speedData.toString(),
+            satellitesData.toString(),
+            gpsTimeData.toString()
         )
         csvWriter.writeData(sensorDataToFile)
     }
@@ -386,6 +474,13 @@ class Mereni : ComponentActivity(), SensorEventListener {
         gSensorDataX.text = "x=0"
         gSensorDataY.text = "y=0"
         gSensorDataZ.text = "z=0"
+        //GPS
+        latitude.text = "0° N/S"
+        longitude.text = "0° W/E"
+        altitude.text = "0 m"
+        satellites.text = "0"
+        speed.text = "0 m/s"
+        gpsTime.text = "00:00:00"
 
         laFilteredX = 0.0f
         laFilteredY = 0.0f
@@ -396,6 +491,13 @@ class Mereni : ComponentActivity(), SensorEventListener {
         gFilteredX = 0.0f
         gFilteredY = 0.0f
         gFilteredZ = 0.0f
+
+        altitudeData = 0.0
+        latitudeData = 0.0
+        longitudeData = 0.0
+        satellitesData = 0
+        gpsTimeData = 0
+        speedData = 0f
 
         jmenoSouboru.setText("")
         hardwareSoubor.isChecked = false
