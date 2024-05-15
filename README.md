@@ -1,0 +1,1 @@
+Vývoj Android aplikace Akcelerometr
