@@ -1,10 +1,10 @@
-#Accelerometr for Android
+# Accelerometr for Android
 
 This repository contains the full project structure. This application was created for the need to access devices sensors and location,
 save the measured data into csv file readable by Matlab and then send these files to FTP server.
 
 
-##Functionality
+## Functionality
 Sensors (Accelerometr, Linear accelerometr, Gyroscope) 
 
 GPS (Longitude, Latitude, Altitude, Speed, Time) 
@@ -20,5 +20,5 @@ Create, write and save files into a external storage
 List a detailed hardware information about the device 
 
 
-##Contact
+## Contact
 holikj2002@gmail.com
