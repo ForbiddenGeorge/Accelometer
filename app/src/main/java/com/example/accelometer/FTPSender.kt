@@ -91,7 +91,6 @@ class FTPSender {
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
                 ftpClient.enterLocalPassiveMode()
                 // Change working directory if needed
-                Log.d("Adresář", defaultDirectory)
                 try {
                     ftpClient.changeWorkingDirectory(defaultDirectory)
                 } catch (e: IOException) {

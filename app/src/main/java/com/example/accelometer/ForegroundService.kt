@@ -12,16 +12,15 @@ class ForegroundService: Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when(intent?.action){
             Actions.START.toString() -> start()
-            Actions.STOP.toString() -> stopSelf()
+            Actions.STOP.toString() -> stopSelf(1)
         }
         return super.onStartCommand(intent, flags, startId)
     }
-
     private fun start(){
-        val notification = NotificationCompat.Builder(this,"Running_service")
-            .setSmallIcon(R.drawable.combined_logo)
+        val notification = NotificationCompat.Builder(this,"location")
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Akcelerometr")
-            .setContentText("Probíhá měření")
+            .setContentText("Probíhá měření...")
             .build()
         startForeground(1, notification )
     }

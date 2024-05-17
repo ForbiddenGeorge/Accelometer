@@ -4,6 +4,7 @@ import CustomDialog
 import FTPSender
 import Writer
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -39,6 +40,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
+
 class Mereni : ComponentActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     //Lineární Akcelometr
@@ -64,6 +66,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
     private lateinit var speed: TextView
     private lateinit var satellites: TextView
     private lateinit var gpsTime: TextView
+    private var gpsTrue: Boolean = false
     //Checkboxy
     private lateinit var checkBoxLinearniAkcelometr: CheckBox
     private lateinit var checkBoxAkcelometr: CheckBox
@@ -106,12 +109,11 @@ class Mereni : ComponentActivity(), SensorEventListener {
     //Tlačítka
     private lateinit var startButton: Button
     //Neklasifikováno
-    private val decimalFormat = "%.6f"
+    private val decimalFormat = "%.5f"
     private var isSensorRunning = false
     private var startTimeMillis: Long = 0
     private var hardwareSend: Boolean = false
     //Permise pro vysoké frekvenční snímání
-    private val highSampleRequestCode = 123
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -124,7 +126,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
     //Pravidelné zaznamenávání dat
     private var scheduledExecutor: ScheduledExecutorService? = null
     //FTP
-    public val ftpSender = FTPSender()
+    private val ftpSender = FTPSender()
     //Inicializace
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -194,17 +196,18 @@ class Mereni : ComponentActivity(), SensorEventListener {
         speed = findViewById(R.id.GPS_Speed_Data)
         altitude = findViewById(R.id.GPS_Altitude_Data)
         gpsTime = findViewById(R.id.GPS_Time_Data)
-        latitude.text = "0° N/S"
-        longitude.text = "0° W/E"
+        latitude.text = "0°"
+        longitude.text = "0°"
         altitude.text = "0 m"
         satellites.text = "0"
         speed.text = "0 m/s"
-        gpsTime.text = "00:00:00"
+        gpsTime.text = "00:00:00:00:00:00"
 
         startButton = findViewById(R.id.startButton)
         stopwatchTime = findViewById(R.id.TimeRunData)
         latency = sharedPreferences.getInt("INT_KEY",0)
         Log.d("Latency", latency.toString())
+
 
         jmenoSouboru = findViewById(R.id.nazevSouboru)
 
@@ -214,7 +217,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
             } else {
                 if(!ftpSender.isConnectedToInternet(this)){
                     CustomDialog.showMessage(this,"Chyba připojení",
-                            "CZ:Zařízení není připojeno k internetu, pro FTP přenos, připojte se během měření k internetu")
+                            "Zařízení není připojeno k internetu, pro FTP přenos, připojte se během měření k internetu")
                 }
                 startSensor()
             }
@@ -236,23 +239,40 @@ class Mereni : ComponentActivity(), SensorEventListener {
     //Počátek snímání, rozjetí celého systému
     private fun startSensor() {
         if(checkBoxAkcelometr.isChecked || checkBoxGyroskop.isChecked || checkBoxLinearniAkcelometr.isChecked || checkboxGPS.isChecked){
-            if(checkBoxLinearniAkcelometr.isChecked){
-                sensorManager.registerListener(this, laSensor, latency * 1000)
-            }
-            if(checkBoxAkcelometr.isChecked){
-                sensorManager.registerListener(this, aSensor, latency * 1000)
-            }
-            if( checkBoxGyroskop.isChecked){
-                sensorManager.registerListener(this, gSensor, latency * 1000)
-            }
-            if( hardwareSoubor.isChecked){
-                hardwareSend = true
-            }
-            if(checkboxGPS.isChecked){
+            /*if(checkboxGPS.isChecked){
                 Intent(applicationContext, LocationService::class.java).apply {
                     action = LocationService.ACTION_START
                     startService(this)
                 }
+            }else{
+            Intent(applicationContext, LocationService::class.java).apply {
+                action = LocationService.ACTION_START
+                startService(this)
+            }
+            }*/
+            Intent(applicationContext, LocationService::class.java).apply {
+                action = LocationService.ACTION_START
+                startService(this)
+            }
+            if(checkBoxLinearniAkcelometr.isChecked){
+                sensorManager.registerListener(this, laSensor, latency * 1000)
+                checkBoxLinearniAkcelometr.isClickable = false
+            }
+            if(checkBoxAkcelometr.isChecked){
+                sensorManager.registerListener(this, aSensor, latency * 1000)
+                checkBoxAkcelometr.isClickable = false
+            }
+            if( checkBoxGyroskop.isChecked){
+                sensorManager.registerListener(this, gSensor, latency * 1000)
+                checkBoxGyroskop.isClickable = false
+            }
+            if( hardwareSoubor.isChecked){
+                hardwareSend = true
+                hardwareSoubor.isClickable = false
+            }
+            if(checkboxGPS.isChecked){
+                gpsTrue = true
+                checkboxGPS.isClickable = false
             }
 
             isSensorRunning = true
@@ -262,8 +282,8 @@ class Mereni : ComponentActivity(), SensorEventListener {
             jmenoSouboruCele = "$jmenoSouboruInput.csv"
             Log.d("File name", jmenoSouboruCele)
             csvWriter.createFile(jmenoSouboruCele)
-            val DHI_name = arrayOf(Build.MODEL)
-            csvWriter.writeData(DHI_name)
+            val fDHIname = arrayOf(Build.MODEL)
+            csvWriter.writeData(fDHIname)
             startTimeMillis = System.currentTimeMillis()
             startTime = SystemClock.elapsedRealtime()
             updateStopwatch()
@@ -277,40 +297,41 @@ class Mereni : ComponentActivity(), SensorEventListener {
 
     //Zastavení celého systému
     private fun stopSensor() {
-        var zprava: com.example.accelometer.Vysledek = com.example.accelometer.Vysledek(false, "", 0)
-
+        var zprava = Vysledek(false, "", 0)
         isSensorRunning = false
         if(checkBoxLinearniAkcelometr.isChecked){
             sensorManager.unregisterListener(this, laSensor)
+            checkBoxLinearniAkcelometr.isClickable = true
         }
         if(checkBoxAkcelometr.isChecked){
             sensorManager.unregisterListener(this, aSensor)
+            checkBoxAkcelometr.isClickable = true
         }
         if( checkBoxGyroskop.isChecked){
             sensorManager.unregisterListener(this, gSensor)
+            checkBoxGyroskop.isClickable = true
         }
         if(checkboxGPS.isChecked){
-            Intent(applicationContext, LocationService::class.java).apply {
-                action = LocationService.ACTION_STOP
-                startService(this)
-            }
+            gpsTrue = false
+            checkboxGPS.isClickable = true
+        }
+        hardwareSoubor.isClickable = true
+        Intent(applicationContext, LocationService::class.java).apply {
+            action = LocationService.ACTION_STOP
+            startService(this)
+            Log.d("KONEC", "BYL ZAVOLÁN  KONEC!!!!")
         }
 
         csvWriter.closeFile()
         scheduledExecutor?.shutdown()
         Toast.makeText(this, "Soubor $jmenoSouboruCele uložen!", Toast.LENGTH_LONG).show()
-        val directory = csvWriter.getAppSubdirectory().toString()
-        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-       // val ftp = sharedPreferences.getBoolean("FTP_CHECK", true)
-        val ftp = true
-        if(ftp)
-        {
-            ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked)
-            zprava = runBlocking {
-                // Waiting for the FTP operation to finish and capturing its result
-                ftpSender.uploadFileToFTPAsync()
-            }
+
+        ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked)
+        zprava = runBlocking {
+            // Waiting for the FTP operation to finish and capturing its result
+            ftpSender.uploadFileToFTPAsync()
         }
+
         if (zprava.status)
         {
             Toast.makeText(this,"Soubor úspěšně odeslán",Toast.LENGTH_SHORT).show()
@@ -322,6 +343,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
     }
 
     //Tohle musí jít nějak zefektivnit, zkrášltít
+    @SuppressLint("SetTextI18n")
     override fun onSensorChanged(event: SensorEvent) {
         if (event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) {
             val lax = event.values[0].toString()
@@ -363,23 +385,20 @@ class Mereni : ComponentActivity(), SensorEventListener {
             gSensorDataY.text = "y=${String.format(decimalFormat, gFilteredY)}"
             gSensorDataZ.text = "z=${String.format(decimalFormat, gFilteredZ)}"
         }
-        if(checkboxGPS.isChecked) {
-            observeLocationUpdates(this)
-        }
     }
 
     //Log když se změní přesnost senzoru
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
         Log.w("SensorAccuracy", "Accuracy has changed $accuracy")
     }
-
+    @SuppressLint("SetTextI18n")
     private fun observeLocationUpdates(context: Context) {
         val locationClient = DefaultLocationClient(
             context,
             LocationServices.getFusedLocationProviderClient(context)
         )
 
-        locationClient.getLocationUpdates((latency * 10).toLong())
+        locationClient.getLocationUpdates(1000L)
             .onEach { location ->
                 // Perform actions with the received location data
                 latitudeData = location.latitude
@@ -387,13 +406,51 @@ class Mereni : ComponentActivity(), SensorEventListener {
                 speedData = location.speed
                 altitudeData = location.altitude
                 gpsTimeData = location.time
-                latitude.text = latitudeData.toString() + "°"
-                longitude.text = longitudeData.toString() + "°"
-                speed.text = speedData.toString() + " m/s"
-                altitude.text = altitudeData.toString() + "m"
-                gpsTime.text = gpsTimeData.toString() + "ms"
+                latitude.text = String.format("%.3f", latitudeData) + "°"
+                longitude.text = String.format("%.3f", longitudeData) + "°"
+                speed.text = String.format("%.2f", speedData) + " m/s"
+                altitude.text = String.format("%.2f", altitudeData) + " m"
+                gpsTime.text =  formatMillisToDateTimeString(gpsTimeData)
             }
-            .launchIn(lifecycleScope) // Assuming you have a lifecycle scope available
+            .launchIn(lifecycleScope) // Myslím že se to nezastaví kvůli tady tomuto
+    }
+
+    private fun formatMillisToDateTimeString(milliseconds: Long): String {
+        val yearDivider = 31_536_000_000L
+        val years = milliseconds / yearDivider
+        var remainingMillis = milliseconds % yearDivider
+
+        val monthDivider = 2_628_288_000L
+        val months = remainingMillis / monthDivider
+        remainingMillis %= monthDivider
+
+        val dayDivider = 86_400_000L
+        val days = remainingMillis / dayDivider
+        remainingMillis %= dayDivider
+
+        val hourDivider = 3_600_000L
+        val hours = remainingMillis / hourDivider
+        remainingMillis %= hourDivider
+
+        val minuteDivider = 60_000L
+        val minutes = remainingMillis / minuteDivider
+        remainingMillis %= minuteDivider
+
+        val seconds = remainingMillis / 1000L
+        var yearsText = years.toString()
+        var monthsText = months.toString()
+        var daysText = days.toString()
+        var hoursText = hours.toString()
+        var minutesText = minutes.toString()
+        var secondsText = seconds.toString()
+        if (years < 10){yearsText = "0$years"}
+        if (months < 10){monthsText = "0$months"}
+        if (days < 10){daysText = "0$days"}
+        if (hours < 10){hoursText = "0$hours"}
+        if (minutes < 10){minutesText = "0$minutes"}
+        if (seconds < 10){secondsText = "0$seconds"}
+        gpsTimeData = "$yearsText$monthsText$daysText$hoursText$minutesText$secondsText".toLong()
+        return yearsText + ":" + monthsText + ":" + daysText + ":" + hoursText + ":" + minutesText + ":" + secondsText
     }
 
     //Zapnutí časovače pro přesné zaznamenávání dat
@@ -412,6 +469,9 @@ class Mereni : ComponentActivity(), SensorEventListener {
 
     //Zapsání akutálních dat do souboru
     private fun readAndWriteSensorData() {
+        if(gpsTrue) {
+            observeLocationUpdates(this)
+        }
         val currentTimeMillis = System.currentTimeMillis()
         val elapsedMillis = currentTimeMillis - startTimeMillis
         /*satellitesData = getSatelliteCount(this)
@@ -502,6 +562,7 @@ class Mereni : ComponentActivity(), SensorEventListener {
         jmenoSouboru.setText("")
         hardwareSoubor.isChecked = false
         hardwareSend = false
+        gpsTrue = false
     }
 
 }

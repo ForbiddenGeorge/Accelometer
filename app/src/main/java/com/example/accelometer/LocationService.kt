@@ -1,19 +1,16 @@
 package com.example.accelometer
 
-import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import java.io.IOException
 
 class LocationService: Service(){
 
@@ -34,6 +31,7 @@ class LocationService: Service(){
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when(intent?.action) {
             ACTION_START -> start()
+            ACTION_START_GPS -> startGPS()
             ACTION_STOP -> stop()
         }
         return super.onStartCommand(intent, flags, startId)
@@ -46,25 +44,28 @@ class LocationService: Service(){
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setOngoing(true)
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        startForeground(1, notification.build())
+    }
 
-        locationClient
-            .getLocationUpdates(1000L)
-            .catch { e -> e.printStackTrace() }
-            .onEach { location ->
-                val lat = location.latitude.toString().takeLast(3)
-                val long = location.longitude.toString().takeLast(3)
-                val updatedNotification = notification.setContentText("Lokace: ($lat, $long)")
-                notificationManager.notify(1, updatedNotification.build())
-            }
-            .launchIn(serviceScope)
+    private fun startGPS(){
+        val notification = NotificationCompat.Builder(this,"location")
+            .setContentTitle("Akcelerometr")
+            .setContentText("Aktivní měření GPS")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setOngoing(true)
 
         startForeground(1, notification.build())
     }
 
     private fun stop(){
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        stopSelf()
+        try{
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf(START_STICKY_COMPATIBILITY)
+            Log.d("I TADY JSEM", "BOHOOHOHO")
+        }catch (e: IOException){
+            Log.e("ERROR při STOPU", e.message.toString())
+        }
+
     }
 
     override fun onDestroy() {
@@ -75,5 +76,6 @@ class LocationService: Service(){
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_START_GPS = "ACTION_START_GPS"
     }
 }

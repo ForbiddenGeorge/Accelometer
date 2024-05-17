@@ -32,8 +32,7 @@ class DefaultLocationClient(
 
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-            if(!isGpsEnabled && isNetworkEnabled) {
+            if(!isGpsEnabled) {
                 throw LocationClient.LocationException("GPS not turned on")
             }
 
@@ -53,7 +52,6 @@ class DefaultLocationClient(
                 locationCallback,
                 Looper.getMainLooper()
             )
-
             awaitClose {
                 client.removeLocationUpdates(locationCallback)
             }
@@ -71,19 +69,3 @@ private fun FusedLocationProviderClient.requestLocationUpdates(
     // Start location updates
     this.requestLocationUpdates(request, locationCallback, mainLooper)
 }
-/*
-@SuppressLint("MissingPermission")
-fun getSatelliteCount(context: Context, executor: Executor, callback: (Int) -> Unit) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val gnssStatusListener = object : GnssStatus.Callback() {
-            override fun onSatelliteStatusChanged(status: GnssStatus) {
-                // This method is called when the satellite status changes
-                // You can get the count of satellites from the status object
-                callback(status.satelliteCount)
-            }
-        }
-        // Register the listener to receive satellite status updates
-        locationManager.registerGnssStatusCallback(executor, gnssStatusListener)
-    }
-}*/
