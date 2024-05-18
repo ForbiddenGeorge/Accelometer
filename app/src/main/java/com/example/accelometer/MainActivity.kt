@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         //Získání hardwarového limitu pro senzory
         findMinDelay()
         //Získání povolení k přístupu do externího úložiště
-        PermissionUtils.checkAndRequestStoragePermission(this)
+        //PermissionUtils.checkAndRequestStoragePermission(this)
 
         //Potvrzení že máme povolení k externímu úložišti
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
     //Na kliknutí otevřít novou aktivitu
     override fun onClick(v: View) {
         val intent: Intent = when (v.id) {
-            R.id.Mereni ->Intent(this, Mereni::class.java)
+            R.id.Mereni ->Intent(this, MereniTest::class.java)
             R.id.Sensory ->Intent(this, Sensory::class.java)
             R.id.Settings -> Intent(this, Settings::class.java)
             else -> Intent(this, MainActivity::class.java)

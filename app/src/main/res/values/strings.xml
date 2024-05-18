@@ -15,4 +15,5 @@
     <string name="Checkbox_Akcelometr">Akcelometr</string>
     <string name="CheckBox_Linearni_Akcelometr">Lineární akcelometr</string>
     <string name="Button_Smazat_soubory">Smazat všechny soubory měření</string>
+    <string name="SensorTextViewEmpty">X = 0\n\nY = 0\n\nZ = 0</string>
 </resources>

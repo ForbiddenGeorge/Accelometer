@@ -23,8 +23,8 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -39,7 +39,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-class Mereni : ComponentActivity(), SensorEventListener {
+class Mereni : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     //Lineární Akcelometr
     private lateinit var laSensor: Sensor
