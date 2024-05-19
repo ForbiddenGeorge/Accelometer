@@ -167,6 +167,7 @@ class MereniTest: AppCompatActivity() {
         isMeasuringActive = false
         csvWriter.closeFile()
         scheduler?.shutdown()
+        resetValues()
         Toast.makeText(this, "Soubor $fileNameWhole uložen!", Toast.LENGTH_SHORT).show()
         zprava = runFTP()
         if (zprava.status)
@@ -175,7 +176,7 @@ class MereniTest: AppCompatActivity() {
         }else{
             CustomDialog.showMessage(this,"Chyba " + zprava.kod, zprava.chyba)
         }
-        resetValues()
+
     }
 
     private fun startMeasuring() {
@@ -292,7 +293,7 @@ class MereniTest: AppCompatActivity() {
             longitudeTextView.text = longitudeValue.toString()
             altitudeTextView.text = altitudeValue.toString()
             speedTextView.text = speedValue.toString()
-            gpsTimeTextView.text = timeValue.toString()
+            //gpsTimeTextView.text = timeValue.toString()
         }
         if(linearAccelerationCheckBox.isChecked){
             linearAccelerationTextView.text =
@@ -460,33 +461,69 @@ class MereniTest: AppCompatActivity() {
     }
 
     private fun updateSensorValues(sensorData: SensorData){
-        val accelerometerData = sensorData.accelerometerData
-        val gyroscopeData = sensorData.gyroscopeData
-        val linearAccelerometerData = sensorData.otherSensorData
-        linearAccelerationValueX = linearAccelerometerData?.get(0) ?: 0f
-        linearAccelerationValueY = linearAccelerometerData?.get(1) ?: 0f
-        linearAccelerationValueZ = linearAccelerometerData?.get(2) ?: 0f
+        var formating = 0f
+        linearAccelerationValueX = sensorData.sensorData?.get(0) ?: 0f
+        linearAccelerationValueY = sensorData.sensorData?.get(1) ?: 0f
+        linearAccelerationValueZ = sensorData.sensorData?.get(2) ?: 0f
 
-        accelerationValueX = accelerometerData?.get(0) ?: 0f
-        accelerationValueY = accelerometerData?.get(1) ?: 0f
-        accelerationValueZ = accelerometerData?.get(2) ?: 0f
+        accelerationValueX = sensorData.sensorData?.get(3) ?: 0f
+        accelerationValueY = sensorData.sensorData?.get(4) ?: 0f
+        accelerationValueZ = sensorData.sensorData?.get(5) ?: 0f
 
-        gyroscopeValueX = gyroscopeData?.get(0) ?: 0f
-        gyroscopeValueY = gyroscopeData?.get(1) ?: 0f
-        gyroscopeValueZ = gyroscopeData?.get(2) ?: 0f
+        gyroscopeValueX = sensorData.sensorData?.get(6) ?: 0f
+        gyroscopeValueY = sensorData.sensorData?.get(7) ?: 0f
+        gyroscopeValueZ = sensorData.sensorData?.get(8) ?: 0f
     }
 
     private val gpsDataReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             // Handle the received GPS data here
             // Extract GPS data from the intent extras
-            val latitude = intent?.getDoubleExtra("latitude", 0.0)
-            val longitude = intent?.getDoubleExtra("longitude", 0.0)
-            val altitude = intent?.getDoubleExtra("altitude", 0.0)
-            val speed = intent?.getFloatExtra("speed", 0f)
-            val time = intent?.getLongExtra("time", 0L)
-
-            // Update UI or perform any other necessary actions with the GPS data
+            if (intent != null) {
+                latitudeValue = intent.getDoubleExtra("latitude", 0.0)
+                longitudeValue = intent.getDoubleExtra("longitude", 0.0)
+                altitudeValue = intent.getDoubleExtra("altitude", 0.0)
+                speedValue = intent.getFloatExtra("speed", 0f)
+                gpsTimeTextView.text = formatTime(intent.getLongExtra("time", 0L))
+            }
         }
+    }
+
+    private fun formatTime(milliseconds: Long): String {
+        val yearDivider = 31_536_000_000L
+        val years = milliseconds / yearDivider
+        var remainingMillis = milliseconds % yearDivider
+
+        val monthDivider = 2_628_288_000L
+        val months = remainingMillis / monthDivider
+        remainingMillis %= monthDivider
+
+        val dayDivider = 86_400_000L
+        val days = remainingMillis / dayDivider
+        remainingMillis %= dayDivider
+
+        val hourDivider = 3_600_000L
+        val hours = remainingMillis / hourDivider
+        remainingMillis %= hourDivider
+
+        val minuteDivider = 60_000L
+        val minutes = remainingMillis / minuteDivider
+        remainingMillis %= minuteDivider
+
+        val seconds = remainingMillis / 1000L
+        var yearsText = years.toString()
+        var monthsText = months.toString()
+        var daysText = days.toString()
+        var hoursText = hours.toString()
+        var minutesText = minutes.toString()
+        var secondsText = seconds.toString()
+        if (years < 10){yearsText = "0$years"}
+        if (months < 10){monthsText = "0$months"}
+        if (days < 10){daysText = "0$days"}
+        if (hours < 10){hoursText = "0$hours"}
+        if (minutes < 10){minutesText = "0$minutes"}
+        if (seconds < 10){secondsText = "0$seconds"}
+        timeValue = "$yearsText$monthsText$daysText$hoursText$minutesText$secondsText".toLong()
+        return yearsText + ":" + monthsText + ":" + daysText + ":" + hoursText + ":" + minutesText + ":" + secondsText
     }
 }

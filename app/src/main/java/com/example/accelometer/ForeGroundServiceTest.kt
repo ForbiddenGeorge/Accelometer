@@ -1,5 +1,6 @@
 package com.example.accelometer
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,8 +15,11 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.accelometer.R.color.da_blue
 
 class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
+    private var sensorManager: SensorManager? = null
+    private var gpsManager: GPSManager? = null
     private lateinit var selectedSensorsTypes: IntArray
     private var gpsEnabledValid: Boolean = false
     private lateinit var sensorHandlerThread: HandlerThread
@@ -23,58 +27,60 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
     private var latency: Int? = 0
 
     override fun onGPSDataReceived(gpsData: Bundle) {
-        /*val gpsDataNew = Bundle().apply {
-            putDouble("latitude", latitude)
-            putDouble("longitude", longitude)
-            putDouble("altitude", altitude)
-            putFloat("speed", speed)
-            putLong("time", time)
-        }
-        sendGPSDataBroadcast(gpsDataNew)*/
+        sendGPSDataBroadcast(gpsData)
         Log.d("GPS FOREGROUND", "Něco se děje")
     }
 
     override fun onSensorDataReceived(sensorData: SensorData) {
         //val sensorDataNew = sensorData.getFloatArray("values") // Corrected line
-
-        sensorData.let {
-            sendSensorDataBroadcast(sensorData)
-        }
+        sendSensorDataBroadcast(sensorData)
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("onStartCommand", "YES")
         createNotificationChannel()
         // Build the notification
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Foreground Service")
-            .setContentText("Running...")
-            .setSmallIcon(R.drawable.combined_logo)
+            .setContentTitle("Akcelerometr")
+            .setContentText("Aktivní měření...")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setColor(da_blue)
+            .setColorized(true)
             .build()
         startForeground(1, notification)
         selectedSensorsTypes = intent?.getIntArrayExtra("selectedSensors") ?: intArrayOf()
         gpsEnabledValid = intent?.getBooleanExtra("gpsEnabled", false) ?:false
         latency = intent?.getIntExtra("latency", 0)
+        if (sensorManager == null) {
+            sensorManager = SensorManager(this)
+        }
+        // Initialize gpsManager if it's null
+        if (gpsManager == null) {
+            gpsManager = GPSManager(this, this)
+        }
         if(selectedSensorsTypes.isNotEmpty()){
-            val sensorManager = SensorManager(this)
-            sensorManager.startSensorUpdates(selectedSensorsTypes,this, latency!!)
+            sensorManager = SensorManager(this)
+            sensorManager!!.startSensorUpdates(selectedSensorsTypes,this, latency!!)
         }
 
-        4
         if(gpsEnabledValid){
-            val gpsManager = GPSManager(this)
+            gpsManager = GPSManager(this, this)
+            gpsManager!!.startGpsUpdates()
         }
-        //val gpsManager = GPSManager(this)
-        //gpsManager.startGpsUpdates()
-
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        //GPSManager.stopGpsUpdates()
-        val sensorManager = SensorManager(this)
-        sensorManager.stopSensorUpdates()
+        Log.d("ForeGroundServiceTest", "Service destroyed, stopping sensors and GPS updates")
+        //val gpsManager = GPSManager(this,this)
+        if(gpsEnabledValid){
+            gpsManager?.stopGpsUpdates()
+        }
+        if(selectedSensorsTypes.isNotEmpty()){
+            sensorManager?.stopSensorUpdates()
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -82,7 +88,7 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
     }
 
     companion object {
-        private val CHANNEL_ID = "ForegroundServiceChannel"
+        private const val CHANNEL_ID = "ForegroundServiceChannel"
         fun startService(context: Context, selectedSensors: IntArray, gpsEnabled: Boolean, latency: Int) { //Zavolá se
             val startIntent = Intent(context, ForeGroundServiceTest::class.java)
             startIntent.putExtra("selectedSensors", selectedSensors)
@@ -117,8 +123,9 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
             val serviceChannel = NotificationChannel(
                 CHANNEL_ID,
                 "Foreground Service Channel",
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_DEFAULT
             )
+            serviceChannel.lightColor = da_blue
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(serviceChannel)
         }

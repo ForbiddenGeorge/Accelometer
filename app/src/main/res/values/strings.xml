@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Akcelometr</string>
-    <string name="title_activity_akcelometr">Akcelometr</string>
-    <string name="title_activity_linearni_akcelometr">Linearni Akcelometr</string>
-    <string name="title_activity_sensory">Sensory</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="app_name">Akcelerometr</string>
+    <string name="title_activity_akcelometr">Akcelerometr</string>
+    <string name="title_activity_linearni_akcelometr">Linearni Akcelerometr</string>
+    <string name="title_activity_sensory">Senzory</string>
+    <string name="title_activity_settings">Nastavení</string>
     <string name="informace_o_telefonu">Informace o telefonu</string>
     <string name="Hlavni_Nadpis">K-206//K-209</string>
     <string name="Card_Nadpis_Mereni">Měření</string>
@@ -12,8 +12,8 @@
     <string name="Button_Ulozit">Uložit</string>
     <string name="Title_Activity_Nastaveni">Nastavení</string>
     <string name="CheckBox_Gyroskop">Gyroskop</string>
-    <string name="Checkbox_Akcelometr">Akcelometr</string>
-    <string name="CheckBox_Linearni_Akcelometr">Lineární akcelometr</string>
+    <string name="Checkbox_Akcelometr">Akcelerometr</string>
+    <string name="CheckBox_Linearni_Akcelometr">Lineární akcelerometr</string>
     <string name="Button_Smazat_soubory">Smazat všechny soubory měření</string>
     <string name="SensorTextViewEmpty">X = 0\n\nY = 0\n\nZ = 0</string>
 </resources>

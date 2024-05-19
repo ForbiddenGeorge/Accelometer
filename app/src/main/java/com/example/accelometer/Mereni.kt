@@ -166,24 +166,24 @@ class Mereni : AppCompatActivity(), SensorEventListener {
             laSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)!!
         }
         laSensorDataX = findViewById(R.id.laSensorDataX)
-        laSensorDataY = findViewById(R.id.laSensorDataY)
-        laSensorDataZ = findViewById(R.id.laSensorDataZ)
+        //laSensorDataY = findViewById(R.id.laSensorDataY)
+        //laSensorDataZ = findViewById(R.id.laSensorDataZ)
         laSensorDataX.text = "x=0"
         laSensorDataY.text = "y=0"
         laSensorDataZ.text = "z=0"
 
         //Akcelometr
         aSensorDataX = findViewById(R.id.aSensorDataX)
-        aSensorDataY = findViewById(R.id.aSensorDataY)
-        aSensorDataZ = findViewById(R.id.aSensorDataZ)
+        /*aSensorDataY = findViewById(R.id.aSensorDataY)
+        aSensorDataZ = findViewById(R.id.aSensorDataZ)*/
         aSensorDataX.text = "x=0"
         aSensorDataY.text = "y=0"
         aSensorDataZ.text = "z=0"
 
         //Gyroskop
         gSensorDataX = findViewById(R.id.gSensorDataX)
-        gSensorDataY = findViewById(R.id.gSensorDataY)
-        gSensorDataZ = findViewById(R.id.gSensorDataZ)
+       /* gSensorDataY = findViewById(R.id.gSensorDataY)
+        gSensorDataZ = findViewById(R.id.gSensorDataZ)*/
         gSensorDataX.text = "x=0"
         gSensorDataY.text = "y=0"
         gSensorDataZ.text = "z=0"
