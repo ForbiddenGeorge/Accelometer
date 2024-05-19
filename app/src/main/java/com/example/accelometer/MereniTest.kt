@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -26,7 +27,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -97,8 +102,8 @@ class MereniTest: AppCompatActivity() {
     private var latency = 0
     //Vlákno
     private val uiHandler = Handler(Looper.getMainLooper())
+
     //Zaokrouhlovač
-    private val decimalFormat = "%.6f"
 
 
 
@@ -150,12 +155,25 @@ class MereniTest: AppCompatActivity() {
                 stopMeasuring()
             }
         }
+        gpsCheckBox.setOnClickListener {
+            if(gpsCheckBox.isChecked){
+                if(!isLocationEnabled(this)){
+                    CustomDialog.showMessage(this,"Poloha",
+                        "Zařízení nemá zapnuté snímání polohy. Aktivujte snímání polohy a akci proveďte znovu")
+                    gpsCheckBox.isChecked = false
+                }
+            }
+        }
         resetValues()
+    }
+    private fun isLocationEnabled(context: Context): Boolean {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
     private fun stopMeasuring(){
-        ForeGroundServiceTest.stopService(this)
         stopItAll()
+        ForeGroundServiceTest.stopService(this)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(sensorDataReceiver)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(gpsDataReceiver)
         enableDisableCheckBoxes(true)
@@ -169,45 +187,57 @@ class MereniTest: AppCompatActivity() {
         scheduler?.shutdown()
         resetValues()
         Toast.makeText(this, "Soubor $fileNameWhole uložen!", Toast.LENGTH_SHORT).show()
+        CoroutineScope(Dispatchers.IO).launch {
         zprava = runFTP()
-        if (zprava.status)
-        {
-            Toast.makeText(this,"Soubor úspěšně odeslán",Toast.LENGTH_SHORT).show()
-        }else{
-            CustomDialog.showMessage(this,"Chyba " + zprava.kod, zprava.chyba)
+        withContext(Dispatchers.Main) {
+            if (zprava.status) {
+                    Toast.makeText(this@MereniTest, "Soubor úspěšně odeslán", Toast.LENGTH_SHORT).show()
+            } else {
+                CustomDialog.showMessage(this@MereniTest, "Chyba " + zprava.kod, zprava.chyba)
+            }
         }
+        }
+
 
     }
 
     private fun startMeasuring() {
        //doRegisterSensorsChecked()
         val selectedSensorTypes = getSelectedSensorTypes() // Správné číselné hodnoty
-        if(selectedSensorTypes.isNotEmpty() || gpsCheckBox.isChecked){
-
-            ForeGroundServiceTest.startService(
-                this,
-                selectedSensorTypes,
-                gpsCheckBox.isChecked,
-                latency
-            )
-            startItAll()
-            //Senzory
-            LocalBroadcastManager.getInstance(this).registerReceiver(
-                sensorDataReceiver,
-                IntentFilter("SENSOR_DATA_ACTION")
-            )
-            //GPS
-            LocalBroadcastManager.getInstance(this).registerReceiver(
-                gpsDataReceiver,
-                IntentFilter("GPS_DATA_ACTION")
-            )
-            enableDisableCheckBoxes(false)
+        if(gpsCheckBox.isChecked && !isLocationEnabled(this)){
+            CustomDialog.showMessage(this,"Poloha",
+                "Zařízení nemá zapnuté snímání polohy. Aktivujte snímání polohy a akci proveďte znovu")
+            gpsCheckBox.isChecked = false
         }else{
-            Toast.makeText(this,"Nebyl zvolen žádný senzor", Toast.LENGTH_SHORT).show()
+            if(selectedSensorTypes.isNotEmpty() || gpsCheckBox.isChecked){
+
+                ForeGroundServiceTest.startService(
+                    this,
+                    selectedSensorTypes,
+                    gpsCheckBox.isChecked,
+                    latency
+                )
+                startItAll()
+                //Senzory
+                if(selectedSensorTypes.isNotEmpty()){
+                    LocalBroadcastManager.getInstance(this).registerReceiver(
+                        sensorDataReceiver,
+                        IntentFilter("SENSOR_DATA_ACTION")
+                    )
+                }
+                //GPS
+                if(gpsCheckBox.isChecked){
+                    LocalBroadcastManager.getInstance(this).registerReceiver(
+                        gpsDataReceiver,
+                        IntentFilter("GPS_DATA_ACTION")
+                    )
+                }
+                enableDisableCheckBoxes(false)
+            }else{
+                Toast.makeText(this,"Nebyl zvolen žádný senzor", Toast.LENGTH_SHORT).show()
+            }
         }
     }
-
-
 
     private fun getSelectedSensorTypes(): IntArray {
         val selectedSensorTypes = mutableListOf<Int>()
@@ -228,7 +258,6 @@ class MereniTest: AppCompatActivity() {
     private fun runFTP(): Vysledek {
         ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), fileNameWhole, hardwareFileCheckBox.isChecked)
         val outcome = runBlocking {
-            // Waiting for the FTP operation to finish and capturing its result
             ftpSender.uploadFileToFTPAsync()
         }
         return outcome
@@ -289,10 +318,10 @@ class MereniTest: AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun updateUI() {
         if(gpsCheckBox.isChecked){
-            latitudeTextView.text = latitudeValue.toString()
-            longitudeTextView.text = longitudeValue.toString()
-            altitudeTextView.text = altitudeValue.toString()
-            speedTextView.text = speedValue.toString()
+            latitudeTextView.text = latitudeValue.toString() + "°"
+            longitudeTextView.text = longitudeValue.toString() + "°"
+            altitudeTextView.text = altitudeValue.toString() + "m.n.m."
+            speedTextView.text = (speedValue * 3.6).toString() + "km/h"
             //gpsTimeTextView.text = timeValue.toString()
         }
         if(linearAccelerationCheckBox.isChecked){
@@ -400,13 +429,13 @@ class MereniTest: AppCompatActivity() {
 
     private fun initializeGPSTextViews(){
         longitudeTextView = findViewById(R.id.GPS_Longitude_Data)
-        longitudeTextView.text = "0"
+        longitudeTextView.text = "0°"
         latitudeTextView = findViewById(R.id.GPS_Latitude_Data)
-        latitudeTextView.text = "0"
+        latitudeTextView.text = "0°"
         altitudeTextView = findViewById(R.id.GPS_Altitude_Data)
-        altitudeTextView.text = "0"
+        altitudeTextView.text = "0 m.n.m."
         speedTextView = findViewById(R.id.GPS_Speed_Data)
-        speedTextView.text = "0"
+        speedTextView.text = "0 km/h"
         gpsTimeTextView = findViewById(R.id.GPS_Time_Data)
         gpsTimeTextView.text = "00:00:00:00:00:00"
     } //V pořádku
@@ -416,11 +445,11 @@ class MereniTest: AppCompatActivity() {
         linearAccelerationTextView.text = getString(R.string.SensorTextViewEmpty)
         accelerationTextView.text = getString(R.string.SensorTextViewEmpty)
         gyroscopeTextView.text = getString(R.string.SensorTextViewEmpty)
-        longitudeTextView.text = "0"
-        latitudeTextView.text = "0"
-        altitudeTextView.text= "0"
-        speedTextView.text = "0"
-        gpsTimeTextView.text = stopwatchText
+        longitudeTextView.text = "0°"
+        latitudeTextView.text = "0°"
+        altitudeTextView.text= "0 m.n.m."
+        speedTextView.text = "0 km/h"
+        gpsTimeTextView.text = "00:00:00:00:00:00"
         linearAccelerationValueX = 0f
         linearAccelerationValueY = 0f
         linearAccelerationValueZ = 0f

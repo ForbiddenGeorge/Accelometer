@@ -60,7 +60,8 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
         override fun onLocationChanged(location: Location) {
             val gpsData = Bundle().apply {
                 val altitude = decimalFormat.format(location.altitude).replace(',', '.').toDouble()
-                val speed = decimalFormat.format(location.speed).replace(',', '.').toFloat()
+                var speed = (location.speed * 3.6).toFloat()
+                    speed = decimalFormat.format(speed).replace(',', '.').toFloat()
                 putDouble("latitude", location.latitude)
                 putDouble("longitude", location.longitude)
                 putDouble("altitude", altitude)
