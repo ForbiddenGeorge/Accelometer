@@ -17,8 +17,8 @@
         android:left="4dp"
         android:top="4dp"
         android:drawable="@drawable/ic_launcher_foreground"
-        android:width= "43dp"
-        android:height= "43dp"
+        android:width= "45dp"
+        android:height= "45dp"
         android:gravity="center"
         android:viewportWidth="108"
         android:viewportHeight="108"/>

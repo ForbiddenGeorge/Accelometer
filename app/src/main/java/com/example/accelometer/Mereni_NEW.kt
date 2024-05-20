@@ -258,7 +258,7 @@ class Mereni_NEW: AppCompatActivity(), SensorEventListener {
         ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), fileNameWhole, hardwareFileCheckBox.isChecked)
         val outcome = runBlocking {
             // Waiting for the FTP operation to finish and capturing its result
-            ftpSender.uploadFileToFTPAsync()
+            ftpSender.queueFTP(true)
         }
         return outcome
     }

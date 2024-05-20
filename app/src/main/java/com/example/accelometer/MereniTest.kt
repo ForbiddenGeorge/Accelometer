@@ -12,6 +12,8 @@ import android.content.IntentFilter
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -32,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.lang.Thread.sleep
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,12 +70,14 @@ class MereniTest: AppCompatActivity() {
     private lateinit var altitudeTextView: TextView
     private lateinit var speedTextView: TextView
     private lateinit var gpsTimeTextView: TextView
+    private lateinit var satteliteCountTextView: TextView
     //Raw data
     private var longitudeValue: Double = 0.0
     private var latitudeValue: Double = 0.0
     private var altitudeValue: Double = 0.0
     private var speedValue = 0f
     private var timeValue:Long = 0L
+    private var satelliteValue: Int = 0
     //Checkboxy
     private lateinit var linearAccelerationCheckBox: CheckBox
     private lateinit var accelerationCheckBox: CheckBox
@@ -145,6 +150,7 @@ class MereniTest: AppCompatActivity() {
         fileName = findViewById(R.id.nazevSouboru)
         //Logika tlačítka
         Button.setOnClickListener {
+            Button.isClickable = false
             if(!isMeasuringActive){
                 if(!ftpSender.isConnectedToInternet(this)){
                     CustomDialog.showMessage(this,"Chyba připojení",
@@ -154,6 +160,9 @@ class MereniTest: AppCompatActivity() {
             }else{
                 stopMeasuring()
             }
+            Button.postDelayed({
+                Button.isClickable = true
+            }, 1250)
         }
         gpsCheckBox.setOnClickListener {
             if(gpsCheckBox.isChecked){
@@ -172,33 +181,40 @@ class MereniTest: AppCompatActivity() {
     }
 
     private fun stopMeasuring(){
-        stopItAll()
+        stopWatch()
+        sleep(10)
+        isMeasuringActive = false
         ForeGroundServiceTest.stopService(this)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(sensorDataReceiver)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(gpsDataReceiver)
         enableDisableCheckBoxes(true)
+        sleep(10)
+        stopItAll()
     }
 
     private fun stopItAll() {
         var zprava = Vysledek(false,"",0)
-        stopWatch()
-        isMeasuringActive = false
         csvWriter.closeFile()
         scheduler?.shutdown()
-        resetValues()
         Toast.makeText(this, "Soubor $fileNameWhole uložen!", Toast.LENGTH_SHORT).show()
-        CoroutineScope(Dispatchers.IO).launch {
-        zprava = runFTP()
-        withContext(Dispatchers.Main) {
-            if (zprava.status) {
-                    Toast.makeText(this@MereniTest, "Soubor úspěšně odeslán", Toast.LENGTH_SHORT).show()
-            } else {
-                CustomDialog.showMessage(this@MereniTest, "Chyba " + zprava.kod, zprava.chyba)
+        if(!isConnectedToInternet(this)){
+            CustomDialog.showMessage(this,
+                "Internet",
+                "Vaše zařízení není připojené k internetu." +
+                        " Odeslání souboru neproběhlo")
+        }else{
+            CoroutineScope(Dispatchers.IO).launch {
+                zprava = runFTP()
+                withContext(Dispatchers.Main) {
+                    if (zprava.status) {
+                        Toast.makeText(this@MereniTest, "Soubor úspěšně odeslán", Toast.LENGTH_SHORT).show()
+                    } else {
+                        CustomDialog.showMessage(this@MereniTest, "Chyba " + zprava.kod, zprava.chyba)
+                    }
+                }
             }
         }
-        }
-
-
+        resetValues()
     }
 
     private fun startMeasuring() {
@@ -256,11 +272,11 @@ class MereniTest: AppCompatActivity() {
     }
 
     private fun runFTP(): Vysledek {
-        ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), fileNameWhole, hardwareFileCheckBox.isChecked)
-        val outcome = runBlocking {
-            ftpSender.uploadFileToFTPAsync()
-        }
-        return outcome
+            ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), fileNameWhole, hardwareFileCheckBox.isChecked)
+            val outcome = runBlocking {
+                ftpSender.queueFTP(true)
+            }
+            return outcome
     } //V pořádku
 
     private fun startItAll() {
@@ -272,6 +288,13 @@ class MereniTest: AppCompatActivity() {
         startPeriodical()
         Button.text = "Stop"
         isMeasuringActive = true
+        if(!isConnectedToInternet(this)) {
+            CustomDialog.showMessage(this,
+                "Internet",
+                "Vaše zařízení není připojené k internetu." +
+                        " Pokud chcete po ukončení měření odeslat soubory, " +
+                        "připojte se během měření k internetu.")
+        }
     } //V pořádku
 
     private fun stopWatch(){
@@ -322,6 +345,7 @@ class MereniTest: AppCompatActivity() {
             longitudeTextView.text = longitudeValue.toString() + "°"
             altitudeTextView.text = altitudeValue.toString() + "m.n.m."
             speedTextView.text = (speedValue * 3.6).toString() + "km/h"
+            satteliteCountTextView.text = satelliteValue.toString()
             //gpsTimeTextView.text = timeValue.toString()
         }
         if(linearAccelerationCheckBox.isChecked){
@@ -366,6 +390,7 @@ class MereniTest: AppCompatActivity() {
             longitudeValue.toString(),
             altitudeValue.toString(),
             speedValue.toString(),
+            satelliteValue.toString(),
             timeValue.toString(),
         )
         csvWriter.writeData(dataToFile)
@@ -392,6 +417,7 @@ class MereniTest: AppCompatActivity() {
         accelerationCheckBox.isClickable = DisableOrEnable
         gyroscopeCheckBox.isClickable = DisableOrEnable
         hardwareFileCheckBox.isClickable = DisableOrEnable
+        gpsCheckBox.isClickable = DisableOrEnable
     }
 
     private fun getAccessibleSensors(){
@@ -438,6 +464,8 @@ class MereniTest: AppCompatActivity() {
         speedTextView.text = "0 km/h"
         gpsTimeTextView = findViewById(R.id.GPS_Time_Data)
         gpsTimeTextView.text = "00:00:00:00:00:00"
+        satteliteCountTextView = findViewById(R.id.GPS_Sattelite_Data)
+        satteliteCountTextView.text = "0"
     } //V pořádku
 
     private fun resetValues() {
@@ -450,6 +478,7 @@ class MereniTest: AppCompatActivity() {
         altitudeTextView.text= "0 m.n.m."
         speedTextView.text = "0 km/h"
         gpsTimeTextView.text = "00:00:00:00:00:00"
+        satteliteCountTextView.text = "0"
         linearAccelerationValueX = 0f
         linearAccelerationValueY = 0f
         linearAccelerationValueZ = 0f
@@ -465,9 +494,9 @@ class MereniTest: AppCompatActivity() {
         altitudeValue = 0.0
         speedValue = 0f
         timeValue = 0L
+        satelliteValue = 0
         stopwatchTextView.text = stopwatchText
         fileName.setText("")
-        hardwareFileCheckBox.isChecked = false
         sendHardwareFile = false
     } //V pořádku
     //Updaty z venku
@@ -513,6 +542,7 @@ class MereniTest: AppCompatActivity() {
                 longitudeValue = intent.getDoubleExtra("longitude", 0.0)
                 altitudeValue = intent.getDoubleExtra("altitude", 0.0)
                 speedValue = intent.getFloatExtra("speed", 0f)
+                satelliteValue = intent.getIntExtra("satelliteCount",0)
                 gpsTimeTextView.text = formatTime(intent.getLongExtra("time", 0L))
             }
         }
@@ -554,5 +584,14 @@ class MereniTest: AppCompatActivity() {
         if (seconds < 10){secondsText = "0$seconds"}
         timeValue = "$yearsText$monthsText$daysText$hoursText$minutesText$secondsText".toLong()
         return yearsText + ":" + monthsText + ":" + daysText + ":" + hoursText + ":" + minutesText + ":" + secondsText
+    }
+
+    private fun isConnectedToInternet(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        return (networkCapabilities != null) &&
+                (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
     }
 }

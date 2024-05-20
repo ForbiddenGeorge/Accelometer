@@ -31,7 +31,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -303,6 +302,7 @@ class Mereni : AppCompatActivity(), SensorEventListener {
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
        // val ftp = sharedPreferences.getBoolean("FTP_CHECK", true)
         val ftp = true
+        /*
         if(ftp)
         {
             ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), jmenoSouboruCele, hardwareSoubor.isChecked)
@@ -310,7 +310,7 @@ class Mereni : AppCompatActivity(), SensorEventListener {
                 // Waiting for the FTP operation to finish and capturing its result
                 ftpSender.uploadFileToFTPAsync()
             }
-        }
+        }*/
         if (zprava.status)
         {
             Toast.makeText(this,"Soubor úspěšně odeslán",Toast.LENGTH_SHORT).show()

@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.GnssStatus
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -20,6 +21,8 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
     private var handlerThread: HandlerThread
     private var handler: Handler
     private val decimalFormat = DecimalFormat("#.###")
+    private var gnssStatusCallback: GnssStatus.Callback? = null
+    private var satelliteCount: Int = 0
     init {
         locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         handlerThread = HandlerThread("GPSHandlerThread").apply {
@@ -49,11 +52,23 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
             locationListener,
             handler.looper
         )
+        // Register GNSS status callback
+        if (gnssStatusCallback == null) {
+            gnssStatusCallback = object : GnssStatus.Callback() {
+                override fun onSatelliteStatusChanged(status: GnssStatus) {
+                    satelliteCount = status.satelliteCount
+                }
+            }
+            locationManager?.registerGnssStatusCallback(gnssStatusCallback!!, handler)
+        }
     }
 
     fun stopGpsUpdates() {
         locationManager?.removeUpdates(locationListener)
         Log.d("GPSManager", "GPS updates stopped")
+        gnssStatusCallback?.let {
+            locationManager?.unregisterGnssStatusCallback(it)
+        }
     }
 
     private val locationListener = object : LocationListener {
@@ -67,6 +82,7 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
                 putDouble("altitude", altitude)
                 putFloat("speed", speed)
                 putLong("time", location.time)
+                putInt("satelliteCount", satelliteCount)
             }
             listener.onGPSDataReceived(gpsData)
         }

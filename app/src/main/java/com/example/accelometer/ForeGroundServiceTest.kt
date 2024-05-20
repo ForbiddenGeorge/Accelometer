@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
+import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -25,7 +26,7 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
     private lateinit var sensorHandlerThread: HandlerThread
     private lateinit var sensorHandler: Handler
     private var latency: Int? = 0
-
+    private lateinit var wakeLock: PowerManager.WakeLock
     override fun onGPSDataReceived(gpsData: Bundle) {
         sendGPSDataBroadcast(gpsData)
         Log.d("GPS FOREGROUND", "Něco se děje")
@@ -60,27 +61,34 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
             gpsManager = GPSManager(this, this)
         }
         if(selectedSensorsTypes.isNotEmpty()){
+            Log.d("Foreground Service", "Started sensor updates")
             sensorManager = SensorManager(this)
             sensorManager!!.startSensorUpdates(selectedSensorsTypes,this, latency!!)
         }
 
         if(gpsEnabledValid){
+            Log.d("Foreground Service", "Started GPS updates")
             gpsManager = GPSManager(this, this)
             gpsManager!!.startGpsUpdates()
         }
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SensorService::WakeLock")
+        wakeLock.acquire(100*60*1000L /*100 minutes*/)
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("ForeGroundServiceTest", "Service destroyed, stopping sensors and GPS updates")
         //val gpsManager = GPSManager(this,this)
         if(gpsEnabledValid){
             gpsManager?.stopGpsUpdates()
+            Log.d("Foreground Service", "Stoped GPS updates")
         }
         if(selectedSensorsTypes.isNotEmpty()){
             sensorManager?.stopSensorUpdates()
+            Log.d("Foreground Service", "Stoped sensor updates")
         }
+        wakeLock.release()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
