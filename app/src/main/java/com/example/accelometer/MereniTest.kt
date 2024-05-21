@@ -3,12 +3,12 @@ package com.example.accelometer
 import CustomDialog
 import FTPSender
 import Writer
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.location.LocationManager
@@ -28,6 +28,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -121,7 +122,7 @@ class MereniTest: AppCompatActivity() {
         PermissionUtils.checkAndRequestStoragePermission(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PermissionUtils.checkAndRequestHighSamplePermission(this)
-        }
+        }/*
         ActivityCompat.requestPermissions(
             this,
             arrayOf(
@@ -129,7 +130,7 @@ class MereniTest: AppCompatActivity() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ),
             1
-        )
+        )*/
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         linearAccelerationCheckBox = findViewById(R.id.CK1)
         accelerationCheckBox = findViewById(R.id.CK2)
@@ -167,11 +168,26 @@ class MereniTest: AppCompatActivity() {
             }, 1250)
         }
         gpsCheckBox.setOnClickListener {
+
             if(gpsCheckBox.isChecked){
-                if(!isLocationEnabled(this)){
-                    CustomDialog.showMessage(this,"Poloha",
-                        "Zařízení nemá zapnuté snímání polohy. Aktivujte snímání polohy a akci proveďte znovu")
-                    gpsCheckBox.isChecked = false
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    // Request location permissions
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(
+                           android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION
+                        ),
+                        789
+                    )
+                } else {
+                    if(!isLocationEnabled(this)){
+                        CustomDialog.showMessage(this,"Poloha",
+                            "Zařízení nemá zapnuté snímání polohy. Aktivujte snímání polohy a akci proveďte znovu")
+                        gpsCheckBox.isChecked = false
+                    }
                 }
             }
         }
