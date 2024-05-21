@@ -23,6 +23,7 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
     private val decimalFormat = DecimalFormat("#.###")
     private var gnssStatusCallback: GnssStatus.Callback? = null
     private var satelliteCount: Int = 0
+    private var usedSatellites: Int = 0
     init {
         locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         handlerThread = HandlerThread("GPSHandlerThread").apply {
@@ -56,7 +57,13 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
         if (gnssStatusCallback == null) {
             gnssStatusCallback = object : GnssStatus.Callback() {
                 override fun onSatelliteStatusChanged(status: GnssStatus) {
+                    usedSatellites = 0
                     satelliteCount = status.satelliteCount
+                    for (i in 0 until status.satelliteCount) {
+                        if (status.usedInFix(i)) {
+                            usedSatellites++
+                        }
+                    }
                 }
             }
             locationManager?.registerGnssStatusCallback(gnssStatusCallback!!, handler)
@@ -83,6 +90,7 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
                 putFloat("speed", speed)
                 putLong("time", location.time)
                 putInt("satelliteCount", satelliteCount)
+                putInt("usedSatellites", usedSatellites)
             }
             listener.onGPSDataReceived(gpsData)
         }

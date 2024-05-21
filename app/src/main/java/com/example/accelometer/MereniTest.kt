@@ -36,6 +36,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.lang.Thread.sleep
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -78,6 +79,7 @@ class MereniTest: AppCompatActivity() {
     private var speedValue = 0f
     private var timeValue:Long = 0L
     private var satelliteValue: Int = 0
+    private var usedSatelliteValue: Int = 0
     //Checkboxy
     private lateinit var linearAccelerationCheckBox: CheckBox
     private lateinit var accelerationCheckBox: CheckBox
@@ -344,8 +346,8 @@ class MereniTest: AppCompatActivity() {
             latitudeTextView.text = latitudeValue.toString() + "°"
             longitudeTextView.text = longitudeValue.toString() + "°"
             altitudeTextView.text = altitudeValue.toString() + "m.n.m."
-            speedTextView.text = (speedValue * 3.6).toString() + "km/h"
-            satteliteCountTextView.text = satelliteValue.toString()
+            speedTextView.text = (speedValue).toString() + "km/h"
+            satteliteCountTextView.text = usedSatelliteValue.toString() + "/" + satelliteValue.toString()
             //gpsTimeTextView.text = timeValue.toString()
         }
         if(linearAccelerationCheckBox.isChecked){
@@ -495,6 +497,7 @@ class MereniTest: AppCompatActivity() {
         speedValue = 0f
         timeValue = 0L
         satelliteValue = 0
+        usedSatelliteValue = 0
         stopwatchTextView.text = stopwatchText
         fileName.setText("")
         sendHardwareFile = false
@@ -543,13 +546,14 @@ class MereniTest: AppCompatActivity() {
                 altitudeValue = intent.getDoubleExtra("altitude", 0.0)
                 speedValue = intent.getFloatExtra("speed", 0f)
                 satelliteValue = intent.getIntExtra("satelliteCount",0)
+                usedSatelliteValue = intent.getIntExtra("usedSatellites",0)
                 gpsTimeTextView.text = formatTime(intent.getLongExtra("time", 0L))
             }
         }
     }
 
-    private fun formatTime(milliseconds: Long): String {
-        val yearDivider = 31_536_000_000L
+    private fun formatTime(milliseconds: Long): String { //Třebe předělat dle požadavků
+       /* val yearDivider = 31_536_000_000L
         val years = milliseconds / yearDivider
         var remainingMillis = milliseconds % yearDivider
 
@@ -575,14 +579,26 @@ class MereniTest: AppCompatActivity() {
         var daysText = days.toString()
         var hoursText = hours.toString()
         var minutesText = minutes.toString()
-        var secondsText = seconds.toString()
-        if (years < 10){yearsText = "0$years"}
-        if (months < 10){monthsText = "0$months"}
-        if (days < 10){daysText = "0$days"}
-        if (hours < 10){hoursText = "0$hours"}
-        if (minutes < 10){minutesText = "0$minutes"}
-        if (seconds < 10){secondsText = "0$seconds"}
+        var secondsText = seconds.toString()*/
+        //Funguje, ale hraju si tam s minusy a -1, nevím jak se bude chovat při přechodech
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliseconds
+        val years = calendar.get(Calendar.YEAR) - 1970
+        val months = calendar.get(Calendar.MONTH) - 0
+        val days = calendar.get(Calendar.DAY_OF_MONTH) - 0
+        val hours = calendar.get(Calendar.HOUR_OF_DAY) - 0
+        val minutes = calendar.get(Calendar.MINUTE) - 0
+        val seconds = calendar.get(Calendar.SECOND) - 0
+
+
+        val yearsText = years.toString().padStart(2, '0')
+        val monthsText = (months + 1).toString().padStart(2, '0') // Adding 1 to make it 1-based
+        val daysText = days.toString().padStart(2, '0')
+        val hoursText = hours.toString().padStart(2, '0')
+        val minutesText = minutes.toString().padStart(2, '0')
+        val secondsText = seconds.toString().padStart(2, '0')
         timeValue = "$yearsText$monthsText$daysText$hoursText$minutesText$secondsText".toLong()
+        Log.d("Time Debug", timeValue.toString())
         return yearsText + ":" + monthsText + ":" + daysText + ":" + hoursText + ":" + minutesText + ":" + secondsText
     }
 
