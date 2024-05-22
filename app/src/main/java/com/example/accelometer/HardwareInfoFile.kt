@@ -7,7 +7,7 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.util.Log
 
-object HardwareInfo {
+object HardwareInfoFile {
     private var jmenoSouboru: String = "DHI_" + Build.MODEL +".txt"
     fun createHardwareInfo(sensorManager: SensorManager, context: Context) {
 

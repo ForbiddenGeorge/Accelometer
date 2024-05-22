@@ -45,29 +45,29 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             />-->
         <activity
-            android:name=".MereniTest"
+            android:name=".MeasureActivity"
             android:exported="false"
             android:label="@string/title_activity_linearni_akcelometr"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Accelometer"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".Settings"
+            android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             tools:ignore="LockedOrientationActivity"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name=".Sensory"
+            android:name=".SensorsActivity"
             android:exported="false"
             android:label="@string/title_activity_sensory"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Accelometer"
             tools:ignore="LockedOrientationActivity" />
         <service
-            android:name=".ForeGroundServiceTest"
+            android:name=".ForeGroundService"
             android:foregroundServiceType="location"
             android:exported="false" />
     </application>

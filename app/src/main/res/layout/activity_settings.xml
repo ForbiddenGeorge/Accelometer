@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
-
+<!--
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         android:textSize="20sp"
         android:paddingLeft="40dp"
         android:textAlignment="textStart"/>
-
+-->
     <!--<SeekBar
         android:id="@+id/seekBar"
         android:layout_width="match_parent"
@@ -57,6 +57,7 @@
         android:hint="20"
         android:textAlignment="textStart"
         android:inputType="number"/>-->
+<!--
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/FTP_Latency"
         android:layout_width="match_parent"
@@ -94,7 +95,7 @@
         android:textAlignment="textStart"
         android:paddingLeft="40dp"
         />
-
+-->
     <!--<EditText
         android:id="@+id/FTP_Host"
         android:layout_width="match_parent"
@@ -110,7 +111,7 @@
         android:textAlignment="textStart"
         android:textColor="@color/black"
         android:textColorHint="@color/basic" />-->
-
+<!--
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/FTP_Host"
         android:layout_width="match_parent"
@@ -134,7 +135,7 @@
             />
 
     </com.google.android.material.textfield.TextInputLayout>
-
+-->
    <!-- <EditText
         android:id="@+id/FTP_Username"
         android:layout_width="match_parent"
@@ -150,7 +151,7 @@
         android:textColorHint="@color/basic"
         android:inputType="textNoSuggestions"/>-->
 
-
+<!--
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/FTP_Username"
         android:layout_width="match_parent"
@@ -174,7 +175,7 @@
             />
 
     </com.google.android.material.textfield.TextInputLayout>
-
+-->
     <!--<EditText
         android:id="@+id/FTP_Password"
         android:layout_width="200dp"
@@ -189,9 +190,9 @@
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textColorHint="@color/basic" />-->
-
+<!--
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/FTP_Password"
+        android:id="@+id/passwordEditText"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/FTP_Username"
@@ -213,7 +214,7 @@
             />
 
     </com.google.android.material.textfield.TextInputLayout>
-
+-->
     <!--<EditText
         android:id="@+id/FTP_Port"
         android:layout_width="200dp"
@@ -245,11 +246,12 @@
         android:textAlignment="textStart"
         android:textColor="@color/black"
         android:textColorHint="@color/basic" />-->
+<!--
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/FTP_Directory"
+        android:id="@+id/directoryEditText"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_below="@id/FTP_Password"
+        android:layout_below="@id/passwordEditText"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:layout_marginHorizontal="80dp"
@@ -270,10 +272,10 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/FTP_Port"
+        android:id="@+id/portEditText"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_below="@id/FTP_Directory"
+        android:layout_below="@id/directoryEditText"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
         android:layout_marginHorizontal="80dp"
@@ -307,7 +309,8 @@
         android:shadowColor="@color/da_blue"
         android:text="@string/Button_Ulozit"
         android:textColor="@color/white"
-        android:layout_below="@id/FTP_Port"/>
+        android:layout_below="@id/portEditText"/>
 
 </RelativeLayout>
+-->
 </ScrollView>

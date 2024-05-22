@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_test)
+        setContentView(R.layout.mainui)
 
         //Napojení proměnných na UI
         d1 = findViewById(R.id.Mereni)
@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         //Založení .txt souboru s infem o telefonu
         val DHI = sharedPreferences.getString("DHI", null)
         if(DHI == null){
-            HardwareInfo.createHardwareInfo(sensorManager, this)
+            HardwareInfoFile.createHardwareInfo(sensorManager, this)
             val editor = sharedPreferences.edit()
             editor.apply {
                 putString("DHI", "DHI_" + Build.MODEL +".txt")
@@ -64,9 +64,9 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
     //Na kliknutí otevřít novou aktivitu
     override fun onClick(v: View) {
         val intent: Intent = when (v.id) {
-            R.id.Mereni ->Intent(this, MereniTest::class.java)
-            R.id.Sensory ->Intent(this, Sensory::class.java)
-            R.id.Settings -> Intent(this, Settings::class.java)
+            R.id.Mereni ->Intent(this, MeasureActivity::class.java)
+            R.id.Sensory ->Intent(this, SensorsActivity::class.java)
+            R.id.Settings -> Intent(this, SettingsActivity::class.java)
             else -> Intent(this, MainActivity::class.java)
         }
         startActivity(intent)

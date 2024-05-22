@@ -1,7 +1,7 @@
 package com.example.accelometer
 
 import CustomDialog
-import FTPSender
+import FTP
 import Writer
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -44,7 +44,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-class MereniTest: ComponentActivity() {
+class MeasureActivity: ComponentActivity() {
     private lateinit var sensorManager: SensorManager
     //Senzory TEORETICKY NEPOTŘEBUJI
     private lateinit var linearAccelerationlSensor: Sensor
@@ -104,7 +104,7 @@ class MereniTest: ComponentActivity() {
     //Stav měření
     private var isMeasuringActive: Boolean = false
     //FTP
-    private val ftpSender = FTPSender()
+    private val ftpSender = FTP()
     private var scheduler: ScheduledExecutorService? = Executors.newScheduledThreadPool(2)
     //Spoždění
     private var latency = 0
@@ -125,7 +125,7 @@ class MereniTest: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.mereni_test)
+        setContentView(R.layout.measureui)
         PermissionUtils.checkAndRequestStoragePermission(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             PermissionUtils.checkAndRequestNotificationPermission(this)
@@ -214,7 +214,7 @@ class MereniTest: ComponentActivity() {
     private fun stopMeasuring(){
         stopWatch()
         isMeasuringActive = false
-        ForeGroundServiceTest.stopService(this)
+        ForeGroundService.stopService(this)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(sensorDataReceiver)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(gpsDataReceiver)
         enableDisableCheckBoxes(true)
@@ -222,7 +222,7 @@ class MereniTest: ComponentActivity() {
     }
 
     private fun stopItAll() {
-        var zprava = Vysledek(false,"",0)
+        var zprava = FTPResult(false,"",0)
         csvWriter.closeFile()
         scheduler?.shutdown()
         Toast.makeText(this, "Soubor $fileNameWhole uložen!", Toast.LENGTH_SHORT).show()
@@ -236,9 +236,9 @@ class MereniTest: ComponentActivity() {
                 zprava = runFTP()
                 withContext(Dispatchers.Main) {
                     if (zprava.status) {
-                        Toast.makeText(this@MereniTest, "Soubor úspěšně odeslán", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MeasureActivity, "Soubor úspěšně odeslán", Toast.LENGTH_SHORT).show()
                     } else {
-                        CustomDialog.showMessage(this@MereniTest, "Chyba " + zprava.kod, zprava.chyba)
+                        CustomDialog.showMessage(this@MeasureActivity, "Chyba " + zprava.kod, zprava.chyba)
                     }
                 }
             }
@@ -256,7 +256,7 @@ class MereniTest: ComponentActivity() {
         }else{
             if(selectedSensorTypes.isNotEmpty() || gpsCheckBox.isChecked){
 
-                ForeGroundServiceTest.startService(
+                ForeGroundService.startService(
                     this,
                     selectedSensorTypes,
                     gpsCheckBox.isChecked,
@@ -298,7 +298,7 @@ class MereniTest: ComponentActivity() {
         return selectedSensorTypes.toIntArray()
     }
 
-    private fun runFTP(): Vysledek {
+    private fun runFTP(): FTPResult {
             ftpSender.init(this, csvWriter.getAppSubdirectory().toString(), fileNameWhole, hardwareFileCheckBox.isChecked)
             val outcome = runBlocking {
                 ftpSender.queueFTP(true)

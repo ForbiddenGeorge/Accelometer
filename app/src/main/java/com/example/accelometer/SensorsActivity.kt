@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 
-class Sensory : ComponentActivity() {
+class SensorsActivity : ComponentActivity() {
     //založení proměnných
     private lateinit var sensorManager: SensorManager
 
@@ -32,7 +32,7 @@ class Sensory : ComponentActivity() {
     @SuppressLint("SetTextI18n") // Aby nechodily warningy skrze hardcoded text
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_senzory)
+        setContentView(R.layout.sensorsui)
         //Napojení proměnných na UI elementy
         model = findViewById(R.id.ModelInfo)
         linearniAkcelometr = findViewById(R.id.Senzor_Linearni_Akcelometr_Nadpis)

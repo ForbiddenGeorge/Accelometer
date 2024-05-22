@@ -6,7 +6,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import com.example.accelometer.FTPQueue
-import com.example.accelometer.Vysledek
+import com.example.accelometer.FTPResult
 import kotlinx.coroutines.runBlocking
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
@@ -193,7 +193,7 @@ class FTPSender {
 
 }*/ //Původní, plně funkční
 
-class FTPSender {
+class FTP {
     private lateinit var server: String
     private lateinit var port: String
     private lateinit var username: String
@@ -206,8 +206,8 @@ class FTPSender {
     private val queue: BlockingQueue<FTPQueue> = LinkedBlockingQueue()
     private val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
     private var isTransferring = false
-    private var outcome: Vysledek = Vysledek(true,"", 0)
-    private val safeOutcome: Vysledek = Vysledek(true,"", 0)
+    private var outcome: FTPResult = FTPResult(true,"", 0)
+    private val safeOutcome: FTPResult = FTPResult(true,"", 0)
 
     fun init(
         context: Context,
@@ -228,7 +228,7 @@ class FTPSender {
     }
 
 
-    fun queueFTP(firstTime: Boolean):Vysledek{
+    fun queueFTP(firstTime: Boolean):FTPResult{
         if(isTransferring){
             queue.add(FTPQueue(context,localFilePath, remoteFileName, hardwareSend))
             waitFTP()
@@ -262,7 +262,7 @@ class FTPSender {
         }, 0, 4, TimeUnit.SECONDS)
     }
 
-    private fun uploadFileToFTP(fromQueue: Boolean, firstTime: Boolean): Vysledek {
+    private fun uploadFileToFTP(fromQueue: Boolean, firstTime: Boolean): FTPResult {
         val ftpClient = FTPClient()
         var status = false
         var kod = 0
@@ -271,7 +271,7 @@ class FTPSender {
         if (!isConnectedToInternet(context)) {
             kod = 2
             chyba = "CZ: Zařízení není připojeno k internetu, zkontrolujte internetové připojení"
-            return Vysledek(status, chyba, kod)
+            return FTPResult(status, chyba, kod)
         }
 
         try {
@@ -304,7 +304,7 @@ class FTPSender {
                     else -> "Unknown FTP server response code: $kod"
                 }
                 //Když se nepovede, má se zkoušet znova? ASI NE
-                return Vysledek(status, chyba, kod)
+                return FTPResult(status, chyba, kod)
             }
 
             FileInputStream(localFile).use { inputStream ->
@@ -323,14 +323,14 @@ class FTPSender {
                 Log.d("FTP", "Hardware je false?")
             }
             isTransferring = false
-            return Vysledek(status, chyba, kod)
+            return FTPResult(status, chyba, kod)
         } catch (e: IOException) {
             chyba = e.message ?: ""
             isTransferring = false
             if (!firstTime && !status){
                 Toast.makeText(context,"Soubor $remoteFileName se nepodařilo odeslat",Toast.LENGTH_SHORT).show()
             }
-            return Vysledek(status, chyba, kod)
+            return FTPResult(status, chyba, kod)
         } finally {
             try {
                 ftpClient.disconnect()

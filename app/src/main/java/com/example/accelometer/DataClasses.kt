@@ -4,7 +4,14 @@ import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Vysledek(var status: Boolean, var chyba: String, var kod: Int)
+/*
+* Data classes for various needs
+* FTPResult class - to get results from FTP process for proper user awareness*
+* FTPQueue class - for storing files that are scheduled to be sent via FTP
+* SensorData class - custom class for handling sensor data array
+* */
+
+data class FTPResult(var status: Boolean, var chyba: String, var kod: Int)
 data class FTPQueue(val context: Context, val localFilePath: String, val remoteFileName: String, val hardwareFile: Boolean)
 
 data class SensorData(

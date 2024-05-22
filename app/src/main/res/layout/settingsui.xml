@@ -42,9 +42,9 @@
             app:layout_constraintEnd_toEndOf="@id/guidelineRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLeft"
             app:layout_constraintTop_toTopOf="@id/guidelineHeadLineBottom" />
-
+<!--
         <EditText
-            android:id="@+id/LatenceEditText"
+            android:id="@+id/latencyEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/Headline"
@@ -53,28 +53,36 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textColorHint="@color/basic"
-            app:layout_constraintBottom_toTopOf="@id/CheckFTP"
             app:layout_constraintEnd_toEndOf="@id/guidelineButtonRight"
             app:layout_constraintStart_toStartOf="@id/guidelineButtonLeft"
-            app:layout_constraintTop_toBottomOf="@id/SpeedHeadline" />
-
-        <CheckBox
-            android:id="@+id/CheckFTP"
+            app:layout_constraintTop_toBottomOf="@id/SpeedHeadline"
+            app:layout_constraintBottom_toTopOf="@id/FTPHeadline"/>
+-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/FTP_Latency"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
-            app:layout_constraintTop_toBottomOf="@id/LatenceEditText"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/SpeedHeadline"
+            app:layout_constraintEnd_toEndOf="@id/guidelineButtonRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineButtonLeft"
+            app:layout_constraintTop_toBottomOf="@id/SpeedHeadline"
             app:layout_constraintBottom_toTopOf="@id/FTPHeadline"
-            android:text="Nastavit FTP připojení"
-            android:autoSizeTextType="uniform"
-            android:autoSizeMaxTextSize="25sp"
-            android:autoSizeMinTextSize="10sp"
-            android:autoSizeStepGranularity="2sp"
-            android:buttonTint="@color/da_blue"
-            android:textColor="@color/da_blue"
-            />
+            >
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/latencyEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textColor="@color/black"
+                android:textColorHint="@color/basic"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:hint="Perioda"
+                android:gravity="center"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
         <TextView
             android:id="@+id/FTPHeadline"
             android:layout_width="0dp"
@@ -86,9 +94,9 @@
             app:layout_constraintEnd_toEndOf="@id/guidelineRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLeft"
             app:layout_constraintTop_toTopOf="@id/guidelineFrequencyBottom" />
-
+<!--
         <EditText
-            android:id="@+id/FTP_Host"
+            android:id="@+id/hostEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/FTPHeadline"
@@ -98,14 +106,39 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textColorHint="@color/basic"
-            app:layout_constraintBottom_toTopOf="@id/FTP_Username"
+            app:layout_constraintBottom_toTopOf="@id/usernameEditText"
             app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
             app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
             app:layout_constraintTop_toBottomOf="@id/FTPHeadline"
             app:layout_constraintVertical_chainStyle="spread" />
+-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/FTP_Host"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/FTPHeadline"
+            app:layout_constraintBottom_toTopOf="@id/FTP_Username"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/FTPHeadline">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/hostEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:hint="Host"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textColorHint="@color/basic" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+<!--
         <EditText
-            android:id="@+id/FTP_Username"
+            android:id="@+id/usernameEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/FTP_Host"
@@ -114,46 +147,131 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textColorHint="@color/basic"
-            app:layout_constraintBottom_toTopOf="@id/FTP_Password"
+            app:layout_constraintBottom_toTopOf="@id/passwordInputLayout"
             app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
             app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
             app:layout_constraintTop_toBottomOf="@id/FTP_Host" />
-
-        <EditText
-            android:id="@+id/FTP_Password"
+-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/FTP_Username"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/FTP_Username"
+            android:layout_below="@id/FTP_Host"
+            app:layout_constraintBottom_toTopOf="@id/passwordInputLayout"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/FTP_Host"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/usernameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textColorHint="@color/basic"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:inputType="text"
+                android:hint="Uživatelské jméno"
+                android:gravity="center"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+<!--
+        <EditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/usernameEditText"
             android:hint="Heslo"
             android:inputType="textPassword"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textColorHint="@color/basic"
-            app:layout_constraintBottom_toTopOf="@id/FTP_Directory"
+            app:passwordToggleEnabled="true"
+            app:layout_constraintBottom_toTopOf="@id/directoryEditText"
             app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
             app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
-            app:layout_constraintTop_toBottomOf="@id/FTP_Username" />
-
-        <EditText
-            android:id="@+id/FTP_Directory"
+            app:layout_constraintTop_toBottomOf="@id/usernameEditText" />
+-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/FTP_Password"
+            app:passwordToggleEnabled="false"
+            app:layout_constraintTop_toBottomOf="@id/FTP_Username"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintBottom_toTopOf="@id/directoryInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Heslo"
+            android:inputType="textPassword"
+            android:textColor="@color/black"
+            android:textColorHint="@color/basic"
+            android:gravity="center"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/passwordToggle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/eye"
+        app:layout_constraintTop_toTopOf="@id/passwordInputLayout"
+        app:layout_constraintStart_toEndOf="@id/passwordInputLayout"
+        app:layout_constraintBottom_toBottomOf="@id/passwordInputLayout"/>
+    <!--
+        <EditText
+            android:id="@+id/directoryEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/passwordInputLayout"
             android:hint="Umístění"
             android:inputType="textNoSuggestions"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textColorHint="@color/basic"
-            app:layout_constraintBottom_toTopOf="@id/FTP_Port"
+            app:layout_constraintBottom_toTopOf="@id/portEditText"
             app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
             app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
-            app:layout_constraintTop_toBottomOf="@id/FTP_Password" />
-
-        <EditText
-            android:id="@+id/FTP_Port"
+            app:layout_constraintTop_toBottomOf="@id/passwordInputLayout" />
+-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/directoryInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/FTP_Directory"
+            android:layout_below="@id/passwordInputLayout"
+            app:layout_constraintBottom_toTopOf="@id/portInputLayout"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/passwordInputLayout"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/directoryEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textColorHint="@color/basic"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:inputType="text"
+                android:hint="Umístění"
+                android:gravity="center"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+     <!--
+        <EditText
+            android:id="@+id/portEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/directoryInputLayout"
             android:hint="Port"
             android:inputType="number"
             android:textAlignment="center"
@@ -162,8 +280,31 @@
             app:layout_constraintBottom_toTopOf="@id/guidelineButtonTop"
             app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
             app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
-            app:layout_constraintTop_toBottomOf="@id/FTP_Directory" />
+            app:layout_constraintTop_toBottomOf="@id/directoryInputLayout" />
+-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/portInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/directoryInputLayout"
+            app:layout_constraintBottom_toTopOf="@id/guidelineButtonTop"
+            app:layout_constraintEnd_toEndOf="@id/guidelineFTPRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineFTPLeft"
+            app:layout_constraintTop_toBottomOf="@id/directoryInputLayout"
+            app:hintEnabled="true"
+            >
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/portEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textColor="@color/black"
+                android:textColorHint="@color/basic"
+                android:hint="Port"
+                android:gravity="center"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
         <Button
             android:id="@+id/SaveButton"
             android:layout_width="0dp"
@@ -248,14 +389,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.30" />
+            app:layout_constraintGuide_percent="0.25" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineFTPHeadlineBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.35" />
+            app:layout_constraintGuide_percent="0.3" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineButtonTop"

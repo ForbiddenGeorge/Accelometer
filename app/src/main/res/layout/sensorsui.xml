@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/Nadpis"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="@string/informace_o_telefonu"
+                android:textAlignment="center"
+                android:textColor="@color/da_blue"
+                android:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toBottomOf="@id/SensorsGuideHeadline"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Model Info -->
+            <TextView
+                android:id="@+id/ModelInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25sp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@id/SensorsGuideHeadline"
+                app:layout_constraintBottom_toTopOf="@id/Senzor_Akcelometr_Nadpis"/>
+
+            <!-- Accelerometer -->
+            <TextView
+                android:id="@+id/Senzor_Akcelometr_Nadpis"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@+id/ModelInfo" />
+
+            <TextView
+                android:id="@+id/Senzor_Akcelometr_Data"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@+id/Senzor_Akcelometr_Nadpis"
+                app:layout_constraintBottom_toTopOf="@id/Senzor_Linearni_Akcelometr_Nadpis"/>
+
+            <!-- Linear Accelerometer -->
+            <TextView
+                android:id="@+id/Senzor_Linearni_Akcelometr_Nadpis"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@+id/Senzor_Akcelometr_Data" />
+
+            <TextView
+                android:id="@+id/Senzor_Linearni_Akcelometr_Data"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@+id/Senzor_Linearni_Akcelometr_Nadpis"
+                app:layout_constraintBottom_toTopOf="@id/Senzor_Gyroskop_Nadpis"/>
+
+            <!-- Gyroscope -->
+            <TextView
+                android:id="@+id/Senzor_Gyroskop_Nadpis"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@+id/Senzor_Linearni_Akcelometr_Data"
+                />
+
+            <TextView
+                android:id="@+id/Gyroskop_data"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@+id/Senzor_Gyroskop_Nadpis"
+                app:layout_constraintBottom_toTopOf="@id/Senzor_Gravitace_Nadpis"/>
+
+            <!-- Gravity -->
+            <TextView
+                android:id="@+id/Senzor_Gravitace_Nadpis"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@+id/Gyroskop_data" />
+
+            <TextView
+                android:id="@+id/Senzor_Gravitace_Data"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                app:layout_constraintEnd_toEndOf="@id/SensorsGuideRight"
+                app:layout_constraintStart_toStartOf="@id/SensorsGuideLeft"
+                app:layout_constraintTop_toBottomOf="@+id/Senzor_Gravitace_Nadpis"
+                android:layout_marginBottom="20sp"/>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/SensorsGuideHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.12" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/SensorsGuideBottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.95" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/SensorsGuideLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.05" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/SensorsGuideRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.95" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

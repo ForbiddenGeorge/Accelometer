@@ -15,7 +15,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
-class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
+class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
     private var sensorManager: SensorManager? = null
     private var gpsManager: GPSManager? = null
     private lateinit var selectedSensorsTypes: IntArray
@@ -98,7 +98,7 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
     companion object {
         private const val CHANNEL_ID = "ForegroundServiceChannel"
         fun startService(context: Context, selectedSensors: IntArray, gpsEnabled: Boolean, latency: Int) {
-            val startIntent = Intent(context, ForeGroundServiceTest::class.java)
+            val startIntent = Intent(context, ForeGroundService::class.java)
             startIntent.putExtra("selectedSensors", selectedSensors)
             startIntent.putExtra("gpsEnabled", gpsEnabled)
             startIntent.putExtra("latency", latency)
@@ -111,7 +111,7 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
         }
 
         fun stopService(context: Context) {
-            val stopIntent = Intent(context, ForeGroundServiceTest::class.java)
+            val stopIntent = Intent(context, ForeGroundService::class.java)
             context.stopService(stopIntent)
         }
     }
@@ -126,6 +126,7 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
         val intent = Intent("SENSOR_DATA_ACTION")
         intent.putExtra("sensorData", sensorData)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+        Log.d("Test", "HHMM")
     }
 
     private fun createNotificationChannel() {
@@ -133,7 +134,7 @@ class ForeGroundServiceTest: Service(), GPSDataListener, SensorDataListener {
             val serviceChannel = NotificationChannel(
                 CHANNEL_ID,
                 "Foreground Service Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             serviceChannel.lightColor = R.color.da_blue
             val manager = getSystemService(NotificationManager::class.java)
