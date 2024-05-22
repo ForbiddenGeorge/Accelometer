@@ -26,7 +26,8 @@ import android.widget.Chronometer
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -35,7 +36,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.lang.Thread.sleep
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -44,7 +44,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-class MereniTest: AppCompatActivity() {
+class MereniTest: ComponentActivity() {
     private lateinit var sensorManager: SensorManager
     //Senzory TEORETICKY NEPOTŘEBUJI
     private lateinit var linearAccelerationlSensor: Sensor
@@ -105,32 +105,35 @@ class MereniTest: AppCompatActivity() {
     private var isMeasuringActive: Boolean = false
     //FTP
     private val ftpSender = FTPSender()
-    private var scheduler: ScheduledExecutorService? = Executors.newScheduledThreadPool(1)
+    private var scheduler: ScheduledExecutorService? = Executors.newScheduledThreadPool(2)
     //Spoždění
     private var latency = 0
     //Vlákno
     private val uiHandler = Handler(Looper.getMainLooper())
 
-    //Zaokrouhlovač
-
-
-
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission granted, start the foreground service
+            Log.d("notify", "YAY")
+        } else {
+            // Permission denied, handle accordingly
+            Toast.makeText(this, "Notification permission is required for this app", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mereni_test)
         PermissionUtils.checkAndRequestStoragePermission(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            PermissionUtils.checkAndRequestNotificationPermission(this)
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PermissionUtils.checkAndRequestHighSamplePermission(this)
-        }/*
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ),
-            1
-        )*/
+        }
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         linearAccelerationCheckBox = findViewById(R.id.CK1)
         accelerationCheckBox = findViewById(R.id.CK2)
@@ -149,6 +152,7 @@ class MereniTest: AppCompatActivity() {
         //Latence
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         latency = sharedPreferences.getInt("INT_KEY",0)
+        Log.d("latency", latency.toString())
         //Okno pro název souboru
         fileName = findViewById(R.id.nazevSouboru)
         //Logika tlačítka
@@ -157,7 +161,7 @@ class MereniTest: AppCompatActivity() {
             if(!isMeasuringActive){
                 if(!ftpSender.isConnectedToInternet(this)){
                     CustomDialog.showMessage(this,"Chyba připojení",
-                        "CZ:Zařízení není připojeno k internetu, pro FTP přenos, připojte se během měření k internetu")
+                        "Zařízení není připojeno k internetu, pro FTP přenos, připojte se během měření k internetu")
                 }
                 startMeasuring()
             }else{
@@ -182,12 +186,11 @@ class MereniTest: AppCompatActivity() {
                         ),
                         789
                     )
-                } else {
-                    if(!isLocationEnabled(this)){
-                        CustomDialog.showMessage(this,"Poloha",
-                            "Zařízení nemá zapnuté snímání polohy. Aktivujte snímání polohy a akci proveďte znovu")
-                        gpsCheckBox.isChecked = false
-                    }
+                }
+                if(!isLocationEnabled(this)){
+                    CustomDialog.showMessage(this,"Poloha",
+                        "Zařízení nemá zapnuté snímání polohy. Aktivujte snímání polohy a akci proveďte znovu")
+                    gpsCheckBox.isChecked = false
                 }
             }
         }
@@ -198,15 +201,23 @@ class MereniTest: AppCompatActivity() {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
+    @SuppressLint("InlinedApi")
+    private fun checkAndRequestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                88
+            )
+        }
+    }
     private fun stopMeasuring(){
         stopWatch()
-        sleep(10)
         isMeasuringActive = false
         ForeGroundServiceTest.stopService(this)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(sensorDataReceiver)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(gpsDataReceiver)
         enableDisableCheckBoxes(true)
-        sleep(10)
         stopItAll()
     }
 
@@ -277,7 +288,6 @@ class MereniTest: AppCompatActivity() {
         val selectedSensorTypes = mutableListOf<Int>()
         if (linearAccelerationCheckBox.isChecked) {
             selectedSensorTypes.add(Sensor.TYPE_LINEAR_ACCELERATION)
-
         }
         if (accelerationCheckBox.isChecked) {
             selectedSensorTypes.add(Sensor.TYPE_ACCELEROMETER)
@@ -285,7 +295,6 @@ class MereniTest: AppCompatActivity() {
         if (gyroscopeCheckBox.isChecked) {
             selectedSensorTypes.add(Sensor.TYPE_GYROSCOPE)
         }
-
         return selectedSensorTypes.toIntArray()
     }
 
@@ -344,16 +353,33 @@ class MereniTest: AppCompatActivity() {
     } //V pořádku
 
     private fun startPeriodical(){
-        scheduler?.scheduleAtFixedRate(
+        /*scheduler?.scheduleAtFixedRate(
             {
                 writeDataToFile()
                 updateUI()
             },
-            0,
+            300,
             latency.toLong(),
             TimeUnit.MILLISECONDS
-        )
+        )*/
 
+        val initialDelay = 0L
+        val period = latency.toLong()
+
+        if (period <= 0) {
+            Log.e("MereniTest", "Invalid initialDelay or period for scheduling: $initialDelay, $period")
+            return
+        }
+
+        try {
+            scheduler?.scheduleAtFixedRate({
+                // Your periodic task
+                writeDataToFile()
+                updateUI()
+            }, initialDelay, period, TimeUnit.MILLISECONDS)
+        } catch (e: IllegalArgumentException) {
+            Log.e("MereniTest", "Error scheduling periodic task", e)
+        }
     } //V pořádku
 
     @SuppressLint("SetTextI18n")
@@ -408,7 +434,7 @@ class MereniTest: AppCompatActivity() {
             longitudeValue.toString(),
             altitudeValue.toString(),
             speedValue.toString(),
-            satelliteValue.toString(),
+            usedSatelliteValue.toString(),
             timeValue.toString(),
         )
         csvWriter.writeData(dataToFile)
@@ -455,7 +481,6 @@ class MereniTest: AppCompatActivity() {
         accesibleSensor = sharedPreferences.getBoolean("Linear_Accelometr_check", false)
         if (!accesibleSensor){
             linearAccelerationCheckBox.isClickable = false
-
         }else{
             linearAccelerationlSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)!!
         }
@@ -607,8 +632,8 @@ class MereniTest: AppCompatActivity() {
         val seconds = calendar.get(Calendar.SECOND) - 0
 
 
-        val yearsText = years.toString().padStart(2, '0')
-        val monthsText = (months + 1).toString().padStart(2, '0') // Adding 1 to make it 1-based
+        val yearsText = (years - 30).toString().padStart(2, '0')
+        val monthsText = (months + 1).toString().padStart(2, '0')
         val daysText = days.toString().padStart(2, '0')
         val hoursText = hours.toString().padStart(2, '0')
         val minutesText = minutes.toString().padStart(2, '0')

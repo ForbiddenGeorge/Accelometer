@@ -22,11 +22,7 @@ class SensorManager(private val context: Context): SensorEventListener {
 
     fun startSensorUpdates(selectedSensorTypes: IntArray, dataListener: SensorDataListener, latency: Int) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!!
-        linearAccelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)!!
-        gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)!!
         stopSensorUpdates()
-
         sensorListener = dataListener
         /*
         for (sensorType in selectedSensorTypes) {
@@ -92,16 +88,22 @@ class SensorManager(private val context: Context): SensorEventListener {
     private fun registerSensors(selectedSensorTypes: IntArray, latency: Int) {
         for (sensor in selectedSensorTypes) {
             if (sensor == Sensor.TYPE_LINEAR_ACCELERATION) {
-                sensorManager.registerListener(this, linearAccelerometerSensor, latency * 1000)
+                linearAccelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)!!
+                sensorManager.registerListener(this, linearAccelerometerSensor, latency)
                 registeredSensors.add(linearAccelerometerSensor)
+                Log.d("Sensors", "Registered linear")
             }
             if (sensor == Sensor.TYPE_ACCELEROMETER) {
-                sensorManager.registerListener(this, accelerometerSensor, latency * 1000)
+                accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!!
+                sensorManager.registerListener(this, accelerometerSensor, latency)
                 registeredSensors.add(accelerometerSensor)
+                Log.d("Sensors", "Registered accel")
             }
             if (sensor == Sensor.TYPE_GYROSCOPE) {
-                sensorManager.registerListener(this, gyroscopeSensor, latency * 1000)
+                gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)!!
+                sensorManager.registerListener(this, gyroscopeSensor, latency)
                 registeredSensors.add(gyroscopeSensor)
+                Log.d("Sensors", "Registered gyro")
             }
         }
     }

@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.cardview.widget.CardView
 
@@ -39,15 +38,16 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         //Získání hardwarového limitu pro senzory
         findMinDelay()
         //Získání povolení k přístupu do externího úložiště
-        //PermissionUtils.checkAndRequestStoragePermission(this)
+        PermissionUtils.checkAndRequestStoragePermission(this)
 
         //Potvrzení že máme povolení k externímu úložišti
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+        /*
         val isPermissionGranted = sharedPreferences.getBoolean("storage_permission_granted", false)
         if(!isPermissionGranted)
         {
             Toast.makeText(this, "Bez povolení nelze data ukládat do dokumentů", Toast.LENGTH_LONG).show()
-        }
+        }*/
 
         //Založení .txt souboru s infem o telefonu
         val DHI = sharedPreferences.getString("DHI", null)

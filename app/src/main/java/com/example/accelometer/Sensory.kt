@@ -2,7 +2,6 @@ package com.example.accelometer
 
 import CustomDialog
 import android.annotation.SuppressLint
-import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
@@ -65,12 +64,12 @@ class Sensory : ComponentActivity() {
                         ?.let { linearniAkcelometrData.text = sensorInfo(it) }
                 }
                 Sensor.TYPE_GYROSCOPE -> {
-                    gyroskop.text = "Gravitační senzor: Přítomen"
+                    gyroskop.text = "Gyroskop: Přítomen"
                     sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
                         ?.let { gyroskopData.text = sensorInfo(it) }
                 }
                 Sensor.TYPE_GRAVITY -> {
-                    gravitace.text = "Gyroskop: Přítomen"
+                    gravitace.text = "Gravitační senzor: Přítomen"
                     sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
                         ?.let { gravitaceData.text = sensorInfo(it) }
                 }
@@ -90,7 +89,7 @@ class Sensory : ComponentActivity() {
     //Pokud nenajde senzory, update UI
     @SuppressLint("SetTextI18n")
     fun notThere(){
-        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+        //val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         if (gravitace.text == null) {
             gravitace.text = "Gravitační senzor: Nepřítomen"
             warning = true
