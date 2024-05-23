@@ -1,5 +1,6 @@
 package com.example.accelometer
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -10,6 +11,7 @@ import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
 
 class MainActivity : ComponentActivity(), View.OnClickListener {
     //Zavedení proměnných
@@ -22,10 +24,18 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         var accelerometerMinDelay: Int = 0
     }
 
+    @SuppressLint("InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mainui)
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ),
+    7
+        )
 
         //Napojení proměnných na UI
         d1 = findViewById(R.id.Mereni)
@@ -109,7 +119,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
                         putBoolean("Gyroscope_check", true)
                     }.apply()
                     if (sensor.minDelay > SensorHelper.accelerometerMinDelay){
-                        SensorHelper.accelerometerMinDelay = sensor.minDelay * 5
+                        SensorHelper.accelerometerMinDelay = sensor.minDelay * 4
                     }
                 }
             }

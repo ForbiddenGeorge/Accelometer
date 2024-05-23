@@ -109,7 +109,7 @@ class SensorsActivity : ComponentActivity() {
         if(warning){
             CustomDialog.showMessage(this, "Senzory nenalezeny",
                 "Některé senzory nebyly nalezeny. " +
-                        "Zkontrolujte že vaše zařízení dané senzory obsahuje. " +
+                        "Zkontrolujte, že vaše zařízení dané senzory obsahuje. " +
                         "V případě chyby kontaktujte autora aplikace. Některé funkce budou nepřístupné.")
             warning = false
         }

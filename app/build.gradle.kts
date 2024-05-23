@@ -11,7 +11,7 @@ android {
         applicationId = "com.example.accelometer"
         minSdk = 25
         //noinspection ExpiredTargetSdkVersion
-        targetSdk = 30
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 

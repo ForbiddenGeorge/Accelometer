@@ -127,10 +127,6 @@ class MeasureActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.measureui)
         PermissionUtils.checkAndRequestStoragePermission(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            PermissionUtils.checkAndRequestNotificationPermission(this)
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PermissionUtils.checkAndRequestHighSamplePermission(this)
         }
@@ -140,6 +136,7 @@ class MeasureActivity: ComponentActivity() {
         gyroscopeCheckBox = findViewById(R.id.CK3)
         gpsCheckBox = findViewById(R.id.CKGPS)
         hardwareFileCheckBox = findViewById(R.id.CK4)
+        gpsCheckBox.textSize = 70f
         initializeGPSTextViews()
         initializeSensorsTextViews()
         getAccessibleSensors()
@@ -155,6 +152,9 @@ class MeasureActivity: ComponentActivity() {
         Log.d("latency", latency.toString())
         //Okno pro název souboru
         fileName = findViewById(R.id.nazevSouboru)
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            PermissionUtils.checkAndRequestNotificationPermission(this)
+        }*/
         //Logika tlačítka
         Button.setOnClickListener {
             Button.isClickable = false

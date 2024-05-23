@@ -6,7 +6,6 @@ import android.text.InputType
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -16,8 +15,9 @@ import com.google.android.material.textfield.TextInputLayout
 
 class SettingsActivity : ComponentActivity() {
     private lateinit var saveButton: Button
-    //private lateinit var latencyEdit: TextInputEditText
-    private lateinit var latencyEdit: EditText
+    private lateinit var latency: TextInputLayout
+    private lateinit var latencyEdit: TextInputEditText
+    //private lateinit var latencyEdit: EditText
     private val min = MainActivity.SensorHelper.accelerometerMinDelay.toFloat()
     //FTP Data
     private lateinit var FTPHeadline: TextView
@@ -42,10 +42,9 @@ class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settingsui)
-
-        latencyEdit = findViewById(R.id.latencyEditText)
+        latency = findViewById(R.id.FTP_Latency)
+        latencyEdit = latency.findViewById(R.id.latencyEditText)
         saveButton = findViewById(R.id.SaveButton)
-       // checkFTP = findViewById(R.id.CheckFTP)
         FTPHeadline = findViewById(R.id.FTPHeadline)
         FTPHost = findViewById(R.id.FTP_Host)
         FTPHostEdit = FTPHost.findViewById(R.id.hostEditText)
@@ -62,6 +61,10 @@ class SettingsActivity : ComponentActivity() {
         FTPPort = findViewById(R.id.portInputLayout)
         FTPPortEdit = FTPPort.findViewById(R.id.portEditText)
         passwordToggle = findViewById<ImageButton>(R.id.passwordToggle)
+        if (FTPPasswordEdit.inputType == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD){
+            FTPPasswordEdit.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+        }
+
 
         passwordToggle.setOnClickListener {
             // Toggle password visibility
@@ -75,12 +78,6 @@ class SettingsActivity : ComponentActivity() {
             FTPPasswordEdit.setSelection(FTPPasswordEdit.text!!.length)
         }
 
-        /*FTPHost.visibility = View.INVISIBLE
-        FTPName.visibility = View.INVISIBLE
-        FTPPassword.visibility = View.INVISIBLE
-        FTPDirectory.visibility = View.INVISIBLE
-        FTPPort.visibility = View.INVISIBLE
-        FTPHeadline.visibility = View.INVISIBLE*/
         loadData()
         saveButton.setOnClickListener {
             saveData()

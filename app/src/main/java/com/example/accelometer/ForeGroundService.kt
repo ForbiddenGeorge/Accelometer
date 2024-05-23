@@ -31,7 +31,6 @@ class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
     override fun onSensorDataReceived(sensorData: SensorData) {
         sendSensorDataBroadcast(sensorData)
     }
-
     @SuppressLint("ResourceAsColor")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("onStartCommand", "YES")
@@ -73,7 +72,7 @@ class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
 
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SensorService::WakeLock")
-        wakeLock.acquire(100 * 60 * 1000L /*100 minutes*/)
+        wakeLock.acquire(1000 * 60 * 1000L /*1000 minutes*/)
 
         return START_STICKY
     }
@@ -102,7 +101,6 @@ class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
             startIntent.putExtra("selectedSensors", selectedSensors)
             startIntent.putExtra("gpsEnabled", gpsEnabled)
             startIntent.putExtra("latency", latency)
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(startIntent)
             } else {
@@ -126,7 +124,6 @@ class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
         val intent = Intent("SENSOR_DATA_ACTION")
         intent.putExtra("sensorData", sensorData)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
-        Log.d("Test", "HHMM")
     }
 
     private fun createNotificationChannel() {

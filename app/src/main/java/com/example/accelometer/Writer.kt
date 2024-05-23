@@ -14,7 +14,7 @@ class Writer(private val context: Context) {
     //Získání subsložky pro uložení
     fun getAppSubdirectory(): File {
         val folder = getFolder()
-        return File(folder, "MereniTest").apply { mkdirs() }
+        return File(folder, "Mereni").apply { mkdirs() }
     }
 
     //Vytvoření souboru

@@ -313,6 +313,7 @@ class FTP {
 
             status = true
             if (hardwareSend) {
+
                 val hardwareFileFind = localFilePath + "/" + "DHI_" + Build.MODEL + ".txt"
                 val hardwareFile = File(hardwareFileFind)
                 FileInputStream(hardwareFile).use { inputStream ->

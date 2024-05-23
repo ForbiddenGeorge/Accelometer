@@ -13,7 +13,7 @@
     <string name="Title_Activity_Nastaveni">Nastavení</string>
     <string name="CheckBox_Gyroskop">Gyroskop</string>
     <string name="Checkbox_Akcelometr">Akcelerometr</string>
-    <string name="CheckBox_Linearni_Akcelometr">Linakceler</string>
+    <string name="CheckBox_Linearni_Akcelometr">Lin. akcelerometr</string>
     <string name="Button_Smazat_soubory">Smazat všechny soubory měření</string>
     <string name="SensorTextViewEmpty">X = 0\n\nY = 0\n\nZ = 0</string>
 </resources>
