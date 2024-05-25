@@ -1,4 +1,4 @@
-# Accelerometr for Android
+# Accelerometer for Android
 
 This repository contains the full project structure. This application was created for the need to access devices sensors and location,
 save the measured data into csv file readable by Matlab and then send these files to FTP server.
