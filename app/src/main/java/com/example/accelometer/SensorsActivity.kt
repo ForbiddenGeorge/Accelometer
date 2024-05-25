@@ -1,6 +1,5 @@
 package com.example.accelometer
 
-import CustomDialog
 import android.annotation.SuppressLint
 import android.hardware.Sensor
 import android.hardware.SensorManager
@@ -9,101 +8,101 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 
+/**
+ * Sensors Activity fro display hardware information about accessed sensors
+ */
 class SensorsActivity : ComponentActivity() {
-    //založení proměnných
+    //Initialize UI
     private lateinit var sensorManager: SensorManager
 
-    private lateinit var linearniAkcelometr: TextView
-    private lateinit var linearniAkcelometrData: TextView
+    private lateinit var linearAccelerometer: TextView
+    private lateinit var linearAccelerometerData: TextView
 
-    private lateinit var akcelometr: TextView
-    private lateinit var akcelometrData: TextView
+    private lateinit var accelerometer: TextView
+    private lateinit var accelerometerData: TextView
 
-    private lateinit var gravitace: TextView
-    private lateinit var gravitaceData: TextView
+    private lateinit var gravitation: TextView
+    private lateinit var gravitationData: TextView
 
-    private lateinit var gyroskop: TextView
-    private lateinit var gyroskopData: TextView
+    private lateinit var gyroscope: TextView
+    private lateinit var gyroscopeData: TextView
 
     private lateinit var model: TextView
 
     private var warning: Boolean = false
 
-    @SuppressLint("SetTextI18n") // Aby nechodily warningy skrze hardcoded text
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Initialize UI
         super.onCreate(savedInstanceState)
         setContentView(R.layout.sensorsui)
-        //Napojení proměnných na UI elementy
         model = findViewById(R.id.ModelInfo)
-        linearniAkcelometr = findViewById(R.id.Senzor_Linearni_Akcelometr_Nadpis)
-        linearniAkcelometrData = findViewById(R.id.Senzor_Linearni_Akcelometr_Data)
-        akcelometr = findViewById(R.id.Senzor_Akcelometr_Nadpis)
-        akcelometrData = findViewById(R.id.Senzor_Akcelometr_Data)
-        gravitace = findViewById(R.id.Senzor_Gravitace_Nadpis)
-        gravitaceData = findViewById(R.id.Senzor_Gravitace_Data)
-        gyroskop = findViewById(R.id.Senzor_Gyroskop_Nadpis)
-        gyroskopData = findViewById(R.id.Gyroskop_data)
-        //Manažer senozorů pro jejich získání
+        linearAccelerometer = findViewById(R.id.Senzor_Linearni_Akcelometr_Nadpis)
+        linearAccelerometerData = findViewById(R.id.Senzor_Linearni_Akcelometr_Data)
+        accelerometer = findViewById(R.id.Senzor_Akcelometr_Nadpis)
+        accelerometerData = findViewById(R.id.Senzor_Akcelometr_Data)
+        gravitation = findViewById(R.id.Senzor_Gravitace_Nadpis)
+        gravitationData = findViewById(R.id.Senzor_Gravitace_Data)
+        gyroscope = findViewById(R.id.Senzor_Gyroskop_Nadpis)
+        gyroscopeData = findViewById(R.id.Gyroskop_data)
+
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
 
-        //Získání modelu telefonu a jeho zapsání
         phoneModel()
 
-        //Projití všech senzorů, najití těch chtěných a vypsání infa jak do UI tak do souboru
+        //Check if sensors are accessible
         for (sensor in deviceSensors){
             when (sensor.type){
                 Sensor.TYPE_ACCELEROMETER -> {
-                    akcelometr.text = "Akcelometr: Přítomen"
+                    accelerometer.text = "Akcelometr: Přítomen"
                     sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-                        ?.let { akcelometrData.text = sensorInfo(it) }
+                        ?.let { accelerometerData.text = sensorInfo(it) }
                 }
                 Sensor.TYPE_LINEAR_ACCELERATION-> {
-                    linearniAkcelometr.text = "Lineární akcelometr: Přítomen"
+                    linearAccelerometer.text = "Lineární akcelometr: Přítomen"
                     sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
-                        ?.let { linearniAkcelometrData.text = sensorInfo(it) }
+                        ?.let { linearAccelerometerData.text = sensorInfo(it) }
                 }
                 Sensor.TYPE_GYROSCOPE -> {
-                    gyroskop.text = "Gyroskop: Přítomen"
+                    gyroscope.text = "Gyroskop: Přítomen"
                     sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
-                        ?.let { gyroskopData.text = sensorInfo(it) }
+                        ?.let { gyroscopeData.text = sensorInfo(it) }
                 }
                 Sensor.TYPE_GRAVITY -> {
-                    gravitace.text = "Gravitační senzor: Přítomen"
+                    gravitation.text = "Gravitační senzor: Přítomen"
                     sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
-                        ?.let { gravitaceData.text = sensorInfo(it) }
+                        ?.let { gravitationData.text = sensorInfo(it) }
                 }
-                //Tady mohou jít další sensory
+                //Space for more sensors
             }
         }
-        //Senzory nejsou k najití
         notThere()
     }
 
-    //Získání modelu telefonu
+    //Get model of the phone
     @SuppressLint("SetTextI18n")
     private fun phoneModel(){
         model.text = "Model telefonu: ${Build.MODEL}"
     }
 
-    //Pokud nenajde senzory, update UI
+    //If sensors are not present, inform user and update UI
     @SuppressLint("SetTextI18n")
     fun notThere(){
-        //val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        if (gravitace.text == null) {
-            gravitace.text = "Gravitační senzor: Nepřítomen"
+        if (gravitation.text == null) {
+            gravitation.text = "Gravitační senzor: Nepřítomen"
             warning = true
         }
-        if (gyroskop.text == null) {
-            gyroskop.text = "Gyroskop: Nepřítomen"
+        if (gyroscope.text == null) {
+            gyroscope.text = "Gyroskop: Nepřítomen"
             warning = true
         }
-        if (akcelometr.text == null) {
-            akcelometr.text = "Akcelometr: Nepřítomen"
+        if (accelerometer.text == null) {
+            accelerometer.text = "Akcelometr: Nepřítomen"
             warning = true
         }
-        if (linearniAkcelometr.text == null) {
-            linearniAkcelometr.text = "Lineární akcelerometr Nepřítomen"
+        if (linearAccelerometer.text == null) {
+            linearAccelerometer.text = "Lineární akcelerometr Nepřítomen"
             warning = true
         }
         if(warning){
@@ -116,7 +115,7 @@ class SensorsActivity : ComponentActivity() {
 
     }
 
-    //Výpis dat o senzorech a uložení do souboru
+    //Data formatting
     private fun sensorInfo(sensor: Sensor): String {
         val fileGRData = arrayOf(
             "Jméno: ${sensor.name}\n",

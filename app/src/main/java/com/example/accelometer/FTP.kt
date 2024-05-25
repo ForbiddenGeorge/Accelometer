@@ -1,3 +1,4 @@
+package com.example.accelometer
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -5,8 +6,6 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import com.example.accelometer.FTPQueue
-import com.example.accelometer.FTPResult
 import kotlinx.coroutines.runBlocking
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
@@ -191,8 +190,11 @@ class FTPSender {
                         networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
     }
 
-}*/ //Původní, plně funkční
+}*/ //Previous version, fully functional, without FTP queuing
 
+/**
+* Class for sending data and hardware files to FTP server
+ */
 class FTP {
     private lateinit var server: String
     private lateinit var port: String
@@ -216,6 +218,7 @@ class FTP {
         hardwareSend: Boolean
     ) {
         this.context = context
+        //Retrieving saved values from Settings Activity
         val sharedPreferences = context.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         server = sharedPreferences.getString("host", null).toString()
         username = sharedPreferences.getString("username", null).toString()
@@ -229,13 +232,12 @@ class FTP {
 
 
     fun queueFTP(firstTime: Boolean):FTPResult{
+        //If at the time upload is processing, add actual file to the queue, otherwise process
         if(isTransferring){
             queue.add(FTPQueue(context,localFilePath, remoteFileName, hardwareSend))
             waitFTP()
             return safeOutcome
-        }else if(queue.isNotEmpty()){ // Pokud se posílá je jeden, prostě se pošle a hotovo
-            //poslední index pole
-            //předat z toho pole jména a tak
+        }else if(queue.isNotEmpty()){ //Only one file is scheduled to be sent
             val item = queue.poll()
             if (item != null) {
                 localFilePath = item.localFilePath
@@ -244,7 +246,7 @@ class FTP {
             }
             outcome = runBlocking { uploadFileToFTP(true, firstTime) }
             return outcome
-            //remove last from queue
+            //Remove last from queue
         }else{
             outcome = runBlocking { uploadFileToFTP(false, firstTime) }
             Log.d("FTP", "All queued files sent")
@@ -252,6 +254,7 @@ class FTP {
         }
     }
     private fun waitFTP(){
+        //Periodically checking if a file is being sent, if not, upload new one from the queue
         executor.scheduleAtFixedRate({
             if (!isTransferring && queue.isNotEmpty() && isConnectedToInternet(context)) {
                 queueFTP(false)
@@ -263,6 +266,7 @@ class FTP {
     }
 
     private fun uploadFileToFTP(fromQueue: Boolean, firstTime: Boolean): FTPResult {
+        //The uploading process itself
         val ftpClient = FTPClient()
         var status = false
         var kod = 0
@@ -282,46 +286,44 @@ class FTP {
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
             ftpClient.enterLocalPassiveMode()
 
-            val localFile = File(localFilePath + "/" + remoteFileName)
+            val localFile = File("$localFilePath/$remoteFileName")
             if (!FTPReply.isPositiveCompletion(kod)) {
                 chyba = when (kod) {
-                    530 -> "EN: Login incorrect: Please check your username and password.\nCZ: Neúspěšné přihlášení, zkontrolujte správnost jména a hesla"
-                    500 -> "Syntax error: The FTP server encountered a syntax error in the command."
-                    501 -> "Syntax error in parameters or arguments: Please verify your input."
-                    502 -> "Command not implemented: The requested command is not supported by the server."
-                    503 -> "Bad sequence of commands: The FTP client issued a command out of sequence."
-                    504 -> "Command not implemented for that parameter: The provided command is not applicable in the current context."
-                    550 -> "Action not taken: The requested action could not be completed."
-                    551 -> "Requested action aborted: The FTP server aborted the requested action."
-                    552 -> "Requested file action aborted: The FTP server aborted the requested file action."
-                    553 -> "Requested action not taken: The FTP server could not complete the requested action."
-                    421 -> "Service not available: The FTP server is not available."
-                    425 -> "Can't open data connection: The FTP server encountered an issue while opening the data connection."
-                    426 -> "Connection closed; transfer aborted: The FTP server closed the connection during the transfer."
-                    451 -> "Requested action aborted: Local error in processing."
-                    452 -> "Requested action not taken: Disk full or allocation exceeded."
-                    //452 -> "Requested action not taken: The FTP server could not execute the requested action."
-                    else -> "Unknown FTP server response code: $kod"
+                    //List of common FTP errors
+                    530 -> "Neúspěšné přihlášení, zkontrolujte správnost jména a hesla"
+                    500 -> "Syntaktická chyba: FTP server narazil na syntaktickou chybu v příkazu."
+                    501 -> "Syntaktická chyba v parametrech nebo argumentech: Zkontrolujte svůj vstup."
+                    502 -> "Příkaz není implementován: Požadovaný příkaz není serverem podporován."
+                    503 -> "Špatná posloupnost příkazů: FTP klient vydal příkaz mimo pořadí."
+                    504 -> "Příkaz není implementován pro tento parametr: Poskytnutý příkaz není v aktuálním kontextu použitelný."
+                    550 -> "Akce nebyla provedena: Požadovanou akci nelze dokončit."
+                    551 -> "Požadovaná akce byla přerušena: FTP server přerušil požadovanou akci."
+                    552 -> "Požadovaná akce s souborem byla přerušena: FTP server přerušil požadovanou akci s souborem."
+                    553 -> "Požadovaná akce nebyla provedena: FTP server nemohl dokončit požadovanou akci."
+                    421 -> "Služba není dostupná: FTP server není dostupný."
+                    425 -> "Nelze otevřít datové spojení: FTP server narazil na problém při otevírání datového spojení."
+                    426 -> "Spojení bylo uzavřeno; přenos byl přerušen: FTP server uzavřel spojení během přenosu."
+                    451 -> "Požadovaná akce byla přerušena: Lokální chyba při zpracování."
+                    452 -> "Požadovaná akce nebyla provedena: Disk je plný nebo byla překročena alokace."
+                    else -> "Neznámá chyba: $kod"
                 }
-                //Když se nepovede, má se zkoušet znova? ASI NE
                 return FTPResult(status, chyba, kod)
             }
 
             FileInputStream(localFile).use { inputStream ->
                 ftpClient.storeFile(remoteFileName, inputStream)
             }
-
+            //File upload was sucessful, check if hardware file must also be sent
             status = true
             if (hardwareSend) {
-
                 val hardwareFileFind = localFilePath + "/" + "DHI_" + Build.MODEL + ".txt"
                 val hardwareFile = File(hardwareFileFind)
                 FileInputStream(hardwareFile).use { inputStream ->
                     ftpClient.storeFile("DHI_" + Build.MODEL + ".txt", inputStream)
                 }
-                Log.d("FTP", "Hardwarový soubor úspěšně nahrán")
+                Log.d("FTP", "Hardware file uploaded")
             }else{
-                Log.d("FTP", "Hardware je false?")
+                Log.d("FTP", "Hardware file not sent")
             }
             isTransferring = false
             return FTPResult(status, chyba, kod)
@@ -334,6 +336,7 @@ class FTP {
             return FTPResult(status, chyba, kod)
         } finally {
             try {
+                //After everything, disconnect from the server
                 ftpClient.disconnect()
                 isTransferring = false
                 Log.d("FTP", "Disconnected from the server.")
@@ -351,9 +354,10 @@ class FTP {
                 Log.e("FTPSender", "Error disconnecting FTP client: ${e.message}")
             }
         }
-    } //Tady už se jen pošle ten soubor
+    }
 
     fun isConnectedToInternet(context: Context): Boolean {
+        //Checks if device is connected to the internet
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)

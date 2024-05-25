@@ -4,9 +4,9 @@ import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 
-/*
+/**
 * Data classes for various needs
-* FTPResult class - to get results from FTP process for proper user awareness*
+* FTPResult class - to get results from FTP process for proper user awareness
 * FTPQueue class - for storing files that are scheduled to be sent via FTP
 * SensorData class - custom class for handling sensor data array
 * */
@@ -16,7 +16,6 @@ data class FTPQueue(val context: Context, val localFilePath: String, val remoteF
 
 data class SensorData(
     val sensorData: FloatArray?,
-    // Add more sensor data arrays as needed
 ) : Parcelable {
     constructor(parcel: Parcel) : this(parcel.createFloatArray())
 

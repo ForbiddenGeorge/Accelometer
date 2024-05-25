@@ -1,24 +1,24 @@
 package com.example.accelometer
 
-import Writer
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
 import android.util.Log
 
+/**
+* Object for gathering device hardware information
+ */
 object HardwareInfoFile {
-    private var jmenoSouboru: String = "DHI_" + Build.MODEL +".txt"
+    private var fileName: String = "DHI_" + Build.MODEL +".txt"
     fun createHardwareInfo(sensorManager: SensorManager, context: Context) {
 
-        // Založení instance Writeru a vytvoření souboru
+        //Create a file
         val txtWriter = Writer(context)
-        txtWriter.createFile(jmenoSouboru)
-
-        //Zapsání modelu telefonu do souboru
+        txtWriter.createFile(fileName)
         phoneModel(txtWriter)
 
-        //Zapsaní informací o jednotlivých senzorech do souboru
+        //Write a paragraph for each accessible sensor
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
         for (sensor in deviceSensors) {
             when (sensor.type) {
@@ -38,17 +38,18 @@ object HardwareInfoFile {
                     sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
                         ?.let { sensorInfo(it, txtWriter) }
                 }
-                //Zde mohou jít další senzory
+                //Others sensors can be added here
             }
         }
 
-        // Uzavření souboru
+        //Close the file
         txtWriter.closeFile()
-        Log.d("Hardware Info", "DHI_" + Build.MODEL + ".txt byl vytvořen a uložen")
+        Log.d("Hardware Info", "DHI_" + Build.MODEL + ".txt was created and saved")
     }
 
-    //Funkce pro správné formátovaní dat do souboru o senzorech
+
     private fun sensorInfo(sensor: Sensor, txtWriter: Writer) {
+        //Function for proper data format
         val fileGRData = arrayOf(
             "Jméno: ${sensor.name}\n",
             "Typ: ${sensor.stringType}\n",
@@ -68,7 +69,7 @@ object HardwareInfoFile {
 
     }
 
-    //Získání modelu telefonu
+    //Get the build model of the device
     private fun phoneModel(txtWriter: Writer) {
         txtWriter.writeHardwareData(arrayOf("Model telefonu: ${Build.MODEL}\n\n\n"))
     }

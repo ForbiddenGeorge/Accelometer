@@ -9,6 +9,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 
+/**
+ * Object for multiple permissions logic
+ */
 object PermissionUtils{
     private const val PREFS_NAME = "sharedPrefs"
     private const val STORAGE_PERMISSION_GRANTED_KEY = "storage_permission_granted"
@@ -111,13 +114,12 @@ object PermissionUtils{
         val isPermissionGranted = sharedPreferences.getBoolean(NOTIFICATION_PERMISSION_GRANTED_KEY, false)
 
         if (!isPermissionGranted || !isNotificationPermissionGranted(activity)) {
-            Log.d("Notifikace", "Volám")
+            Log.d("Notification", "Permission called")
             requestNotificationPermission(activity)
         } else {
             // Permission was previously granted
             Log.d("Notification", "Access already granted")
         }
-
     }
 
     @SuppressLint("InlinedApi")

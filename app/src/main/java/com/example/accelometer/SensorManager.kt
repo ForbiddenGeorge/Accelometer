@@ -8,7 +8,9 @@ import android.hardware.SensorManager
 import android.util.Log
 import java.text.DecimalFormat
 
-
+/**
+ * Class for managing sensor registering/unregistering and proper sensor data formatting
+ */
 class SensorManager(private val context: Context): SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private lateinit var sensorListener: SensorDataListener
@@ -18,74 +20,17 @@ class SensorManager(private val context: Context): SensorEventListener {
     private lateinit var linearAccelerometerSensor: Sensor
     private lateinit var gyroscopeSensor: Sensor
     private val sensorDataArray = FloatArray(9) { 0.0f }
-    val decimalFormat = DecimalFormat("#.######")
+    private val decimalFormat = DecimalFormat("#.######")
 
     fun startSensorUpdates(selectedSensorTypes: IntArray, dataListener: SensorDataListener, latency: Int) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        //To ensure all sensors from previous measurement are unregistered
         stopSensorUpdates()
         sensorListener = dataListener
-        /*
-        for (sensorType in selectedSensorTypes) {
-            val sensor = sensorManager?.getDefaultSensor(sensorType)
-            Log.d("Sensor Type", sensorType.toString())
-            sensor?.let {
-                val sensorListener = object : SensorEventListener {
-                    override fun onSensorChanged(event: SensorEvent) {
-                       /*
-                        when (sensorType) {
-                            Sensor.TYPE_ACCELEROMETER -> {
-                                event.values.copyInto(accelerometerData)
-                            }
-                            Sensor.TYPE_GYROSCOPE -> {
-                                event.values.copyInto(gyroscopeData)
-                            }
-                            else -> {
-                                event.values.copyInto(otherSensorData)
-                            }
-                        }
-
-                        val sensorData = SensorData(
-                            accelerometerData = accelerometerData.clone(),
-                            gyroscopeData = gyroscopeData.clone(),
-                            otherSensorData = otherSensorData.clone()
-                        )
-                        notifySensorData(sensorData)*/
-                        val accelerometerData = FloatArray(3)
-                        val gyroscopeData = FloatArray(3)
-                        val linearAccelerationData = FloatArray(3)
-                        if(sensorType == Sensor.TYPE_LINEAR_ACCELERATION){
-                            linearAccelerationData[0] = event.values[0]
-                            linearAccelerationData[1] = event.values[1]
-                            linearAccelerationData[2] = event.values[2]
-                        }
-                        if(sensorType == Sensor.TYPE_ACCELEROMETER){
-                            accelerometerData[0] = event.values[0]
-                            accelerometerData[1] = event.values[1]
-                            accelerometerData[2] = event.values[2]
-                        }
-                        if(sensorType == Sensor.TYPE_GYROSCOPE){
-                            gyroscopeData[0]=event.values[0]
-                            gyroscopeData[1]=event.values[1]
-                            gyroscopeData[2]=event.values[2]
-                        }
-                        val sensorData = SensorData(linearAccelerationData,accelerometerData,gyroscopeData)
-                        notifySensorData(sensorData)
-                    }
-                    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-                        // Not needed for this example
-                    }
-                }
-                sensorManager?.registerListener(sensorListener, it, latency)
-                synchronized(lock){
-                    registeredSensors.add(it)
-                    Log.d("SensorManager", "registering sensor: ${sensor?.name}")
-                }
-                Log.d("SensorManager", "Registered sensor: ${it.name}")
-            }
-        }*/
         registerSensors(selectedSensorTypes,latency)
     }
     private fun registerSensors(selectedSensorTypes: IntArray, latency: Int) {
+        //register selected sensors for measurement
         for (sensor in selectedSensorTypes) {
             if (sensor == Sensor.TYPE_LINEAR_ACCELERATION) {
                 linearAccelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)!!
@@ -112,6 +57,7 @@ class SensorManager(private val context: Context): SensorEventListener {
         Log.w("Sensor Accuracy", "Sensor accuracy has changed")
     }
     override fun onSensorChanged(event: SensorEvent) {
+        //Save the updated data to correct place in the array
         if(event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION){
             sensorDataArray[0] = decimalFormat.format(event.values[0]).replace(',', '.').toFloat()
             sensorDataArray[1] = decimalFormat.format(event.values[1]).replace(',', '.').toFloat()
@@ -132,6 +78,7 @@ class SensorManager(private val context: Context): SensorEventListener {
     }
 
     fun stopSensorUpdates() {
+        //Unregister all the registered sensors
         synchronized(lock) {
             sensorManager.let {
                 for (sensor in registeredSensors) {
@@ -147,7 +94,8 @@ class SensorManager(private val context: Context): SensorEventListener {
     }
 
     private fun notifySensorData(sensorData: SensorData) {
-            sensorListener.onSensorDataReceived(sensorData)
+        //Send updated data array
+        sensorListener.onSensorDataReceived(sensorData)
     }
 }
 

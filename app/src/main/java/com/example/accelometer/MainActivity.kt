@@ -12,14 +12,14 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
-
+ /**
+ * Main Activity, displaying main menu UI + other initializers
+ */
 class MainActivity : ComponentActivity(), View.OnClickListener {
-    //Zavedení proměnných
     private lateinit var d1: CardView
     private lateinit var d2: CardView
     private lateinit var d3: CardView
     private lateinit var sensorManager: SensorManager
-    //objekt důležitý pro settings, podmínka pro minimální vzorkovací frekvenci
     object SensorHelper {
         var accelerometerMinDelay: Int = 0
     }
@@ -29,15 +29,16 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mainui)
+        //Request notification permission (for foreground service)
         ActivityCompat.requestPermissions(
             this,
             arrayOf(
                 android.Manifest.permission.POST_NOTIFICATIONS
             ),
-    7
+    18751
         )
 
-        //Napojení proměnných na UI
+        //Other Activities
         d1 = findViewById(R.id.Mereni)
         d1.setOnClickListener(this)
         d2 = findViewById(R.id.Sensory)
@@ -45,35 +46,28 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         d3 = findViewById(R.id.Settings)
         d3.setOnClickListener(this)
 
-        //Získání hardwarového limitu pro senzory
+        //Get minimal delay allowed by the device
         findMinDelay()
-        //Získání povolení k přístupu do externího úložiště
+        //Check and request storage permissions
         PermissionUtils.checkAndRequestStoragePermission(this)
 
-        //Potvrzení že máme povolení k externímu úložišti
-        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        /*
-        val isPermissionGranted = sharedPreferences.getBoolean("storage_permission_granted", false)
-        if(!isPermissionGranted)
-        {
-            Toast.makeText(this, "Bez povolení nelze data ukládat do dokumentů", Toast.LENGTH_LONG).show()
-        }*/
 
-        //Založení .txt souboru s infem o telefonu
-        val DHI = sharedPreferences.getString("DHI", null)
-        if(DHI == null){
+
+        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+        //Calling HardwareInfoFile object for creating file about hardware specification, if not previously created
+        val hardwareInfoFile = sharedPreferences.getString("DHI", null)
+        if(hardwareInfoFile == null){
             HardwareInfoFile.createHardwareInfo(sensorManager, this)
             val editor = sharedPreferences.edit()
             editor.apply {
                 putString("DHI", "DHI_" + Build.MODEL +".txt")
-
             }.apply()
         }
     }
 
-    //Na kliknutí otevřít novou aktivitu
     override fun onClick(v: View) {
         val intent: Intent = when (v.id) {
+            //On card click, open new activity
             R.id.Mereni ->Intent(this, MeasureActivity::class.java)
             R.id.Sensory ->Intent(this, SensorsActivity::class.java)
             R.id.Settings -> Intent(this, SettingsActivity::class.java)
@@ -82,7 +76,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         startActivity(intent)
     }
 
-    //Najití nejvetší minimální vzorkovací frekvence ze seznamu chtěných senzorů
+    //Find minimal sampling delay
     private fun findMinDelay() {
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
@@ -91,14 +85,14 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
                 Sensor.TYPE_ACCELEROMETER ->{
                     val editor = sharedPreferences.edit()
                     editor.apply {
-                        putBoolean("Accelometer_check", true)
+                        putBoolean("Accelerometer_check", true)
                     }.apply()
                     SensorHelper.accelerometerMinDelay = sensor.minDelay
                 }
                 Sensor.TYPE_LINEAR_ACCELERATION ->{
                     val editor = sharedPreferences.edit()
                     editor.apply {
-                        putBoolean("Linear_Accelometr_check", true)
+                        putBoolean("Linear_Accelerometer_check", true)
                     }.apply()
                     if (sensor.minDelay > SensorHelper.accelerometerMinDelay){
                         SensorHelper.accelerometerMinDelay = sensor.minDelay

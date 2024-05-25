@@ -15,6 +15,10 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
+/**
+* Class for creating foreground service, notification channel, and starting and stopping data collection
+ */
+
 class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
     private var sensorManager: SensorManager? = null
     private var gpsManager: GPSManager? = null
@@ -24,16 +28,17 @@ class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
     private lateinit var wakeLock: PowerManager.WakeLock
 
     override fun onGPSDataReceived(gpsData: Bundle) {
+        //Passes collected data to MeasureActivity
         sendGPSDataBroadcast(gpsData)
-        Log.d("GPS FOREGROUND", "Něco se děje")
     }
 
     override fun onSensorDataReceived(sensorData: SensorData) {
+        //Passes collected data to MeasureActivity
         sendSensorDataBroadcast(sensorData)
     }
     @SuppressLint("ResourceAsColor")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("onStartCommand", "YES")
+        Log.d("onStartCommand", "Started")
 
         createNotificationChannel()
 
@@ -79,6 +84,7 @@ class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        //Closes those services that are currently active
         if (gpsEnabledValid) {
             gpsManager?.stopGpsUpdates()
             Log.d("Foreground Service", "Stopped GPS updates")
@@ -97,6 +103,7 @@ class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
     companion object {
         private const val CHANNEL_ID = "ForegroundServiceChannel"
         fun startService(context: Context, selectedSensors: IntArray, gpsEnabled: Boolean, latency: Int) {
+            //Passes info about what sensors to enable to the intent and begins the foreground service
             val startIntent = Intent(context, ForeGroundService::class.java)
             startIntent.putExtra("selectedSensors", selectedSensors)
             startIntent.putExtra("gpsEnabled", gpsEnabled)
@@ -109,24 +116,28 @@ class ForeGroundService: Service(), GPSDataListener, SensorDataListener {
         }
 
         fun stopService(context: Context) {
+            // Stops the foreground service
             val stopIntent = Intent(context, ForeGroundService::class.java)
             context.stopService(stopIntent)
         }
     }
 
     private fun sendGPSDataBroadcast(gpsData: Bundle) {
+        //Passes collected data to MeasureActivity
         val intent = Intent("GPS_DATA_ACTION")
         intent.putExtras(gpsData)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
     private fun sendSensorDataBroadcast(sensorData: SensorData) {
+        //Passes collected data to MeasureActivity
         val intent = Intent("SENSOR_DATA_ACTION")
         intent.putExtra("sensorData", sensorData)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
     private fun createNotificationChannel() {
+        //Creates notification channel, shows persistent notification to the user
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
                 CHANNEL_ID,

@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -13,15 +12,15 @@ import androidx.activity.ComponentActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
+/**
+ * Setting Activity for FTP and latency modification and setup
+ */
 class SettingsActivity : ComponentActivity() {
     private lateinit var saveButton: Button
     private lateinit var latency: TextInputLayout
     private lateinit var latencyEdit: TextInputEditText
-    //private lateinit var latencyEdit: EditText
     private val min = MainActivity.SensorHelper.accelerometerMinDelay.toFloat()
-    //FTP Data
     private lateinit var FTPHeadline: TextView
-
     private lateinit var FTPHost: TextInputLayout
     private lateinit var FTPHostEdit: TextInputEditText
     private lateinit var FTPName: TextInputLayout
@@ -33,13 +32,9 @@ class SettingsActivity : ComponentActivity() {
     private lateinit var FTPPort: TextInputLayout
     private lateinit var FTPPortEdit: TextInputEditText
     private lateinit var passwordToggle: ImageButton
-    //private lateinit var FTPHost: EditText
-    /*private lateinit var FTPName: EditText
-    private lateinit var FTPPassword: TextInputLayout
-    private lateinit var FTPPasswordEdit: TextInputEditText
-    private lateinit var FTPDirectory: EditText
-    private lateinit var FTPPort: EditText*/
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Initialize all the UI
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settingsui)
         latency = findViewById(R.id.FTP_Latency)
@@ -60,21 +55,21 @@ class SettingsActivity : ComponentActivity() {
 
         FTPPort = findViewById(R.id.portInputLayout)
         FTPPortEdit = FTPPort.findViewById(R.id.portEditText)
-        passwordToggle = findViewById<ImageButton>(R.id.passwordToggle)
+        passwordToggle = findViewById(R.id.passwordToggle)
+        //Ensure the password field is hidden
         if (FTPPasswordEdit.inputType == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD){
             FTPPasswordEdit.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
 
-
         passwordToggle.setOnClickListener {
-            // Toggle password visibility
+            //Toggle password visibility
             val currentInputType = FTPPasswordEdit.inputType
             FTPPasswordEdit.inputType = if (currentInputType == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
                 InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             } else {
                 InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             }
-            // Move cursor to the end of the text
+            //Move cursor to the end of the text
             FTPPasswordEdit.setSelection(FTPPasswordEdit.text!!.length)
         }
 
@@ -82,24 +77,13 @@ class SettingsActivity : ComponentActivity() {
         saveButton.setOnClickListener {
             saveData()
         }
-        /*checkFTP.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked) {
-                FTPShow()
-            }else{
-                FTPHost.visibility = View.INVISIBLE
-                FTPName.visibility = View.INVISIBLE
-                FTPPassword.visibility = View.INVISIBLE
-                FTPDirectory.visibility = View.INVISIBLE
-                FTPPort.visibility = View.INVISIBLE
-                FTPHeadline.visibility = View.INVISIBLE
-            }
-        }*/
     }
 
     private fun saveData() {
         if (latencyEdit.toString() != ""){
             val savedFrequency = latencyEdit.text.toString().toInt()
             println(savedFrequency)
+            //If latency is below hardware limit, inform user and refuse saving
             if (savedFrequency >= ((min*3) / 1000)){
                 val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
@@ -114,58 +98,31 @@ class SettingsActivity : ComponentActivity() {
                     Log.d("Ukládání",FTPHostEdit.text.toString() + FTPNameEdit.text.toString() + FTPPasswordEdit.text.toString() + FTPDirectoryEdit.text.toString())
                 }.apply()
                 Toast.makeText(this, "Preference uloženy", Toast.LENGTH_SHORT).show()
-        }else {
+            }else {
                 Toast.makeText(
                     this,
                     "Spoždění musí mít stejnou nebo vyšší hodnotu než ${(min*3) / 1000} ms",
                     Toast.LENGTH_LONG
                 ).show()
             }
-       /* if (checkFTP.isChecked){
-            val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-            editor.apply {
-                putString("host", FTPHost.text.toString())
-                putString("username", FTPName.text.toString())
-                putString("password", FTPPassword.text.toString())
-                putString("directory", FTPDirectory.text.toString())
-                putString("port", FTPPort.text.toString())
-                putBoolean("FTP_CHECK", checkFTP.isChecked)
-            }.apply()
-        }*/
         }else{
             Toast.makeText(
                 this,
                 "Spoždění musí mít stejnou nebo vyšší hodnotu než ${(min*3) / 1000} ms",
                 Toast.LENGTH_LONG
             ).show()
-
-        }        }
-
+        }
+    }
 
     private fun loadData() {
+        //When users opens this activity, load last saved data
         val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
         val savedData = sharedPreferences.getInt("INT_KEY", 100)
-
         latencyEdit.setText(savedData.toString())
-        //checkFTP.isChecked = sharedPreferences.getBoolean("FTP_CHECK", true)
-       /* if (checkFTP.isChecked) {
-            FTPShow()
-        }*/
         FTPHostEdit.setText(sharedPreferences.getString("host", null))
         FTPNameEdit.setText(sharedPreferences.getString("username", null))
         FTPPasswordEdit.setText(sharedPreferences.getString("password", null))
         FTPDirectoryEdit.setText(sharedPreferences.getString("directory", null))
         FTPPortEdit.setText(sharedPreferences.getString("port", null))
     }
-
-    private fun FTPShow(){
-            FTPHost.visibility = View.VISIBLE
-            FTPName.visibility = View.VISIBLE
-            FTPPassword.visibility = View.VISIBLE
-            FTPDirectory.visibility = View.VISIBLE
-            FTPPort.visibility = View.VISIBLE
-            FTPHeadline.visibility = View.VISIBLE
-    }
-
 }

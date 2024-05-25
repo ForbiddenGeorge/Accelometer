@@ -15,6 +15,9 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import java.text.DecimalFormat
 
+/**
+* Class that manages location updates
+ */
 class GPSManager(private val context: Context, private val listener: GPSDataListener) {
 
     private var locationManager: LocationManager? = null
@@ -34,6 +37,7 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
 
     @SuppressLint("MissingPermission")
     fun startGpsUpdates() {
+        //Checks if permissions are granted
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -42,14 +46,13 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Handle permission request if not already granted
             return
         }
-
+        //Starts location updates
         locationManager?.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
-            50L, // Update interval in milliseconds
-            0.15f, // Update distance in meters
+            50L, //Update interval in milliseconds
+            0.15f, //Update distance in meters
             locationListener,
             handler.looper
         )
@@ -71,6 +74,7 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
     }
 
     fun stopGpsUpdates() {
+        //Stops location and GNSS updates
         locationManager?.removeUpdates(locationListener)
         Log.d("GPSManager", "GPS updates stopped")
         gnssStatusCallback?.let {
@@ -80,6 +84,7 @@ class GPSManager(private val context: Context, private val listener: GPSDataList
 
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
+            //Packaging and sending all the new data
             val gpsData = Bundle().apply {
                 val altitude = decimalFormat.format(location.altitude).replace(',', '.').toDouble()
                 var speed = (location.speed * 3.6).toFloat()
